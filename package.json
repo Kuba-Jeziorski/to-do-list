@@ -1,0 +1,24 @@
+{
+  "name": "to-do-list",
+  "version": "1.0.0",
+  "description": "Simple project with To Do List made with TS and SCSS.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w & sass --watch src/app.scss dist/app.css --no-source-map"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kuba-Jeziorski/to-do-list.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kuba-Jeziorski/to-do-list/issues"
+  },
+  "homepage": "https://github.com/Kuba-Jeziorski/to-do-list#readme",
+  "devDependencies": {
+    "node-sass": "^9.0.0",
+    "typescript": "^5.1.3"
+  }
+}
