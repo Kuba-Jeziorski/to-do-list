@@ -1,11 +1,7 @@
 import { Task } from "./ts/task.js";
 import { taskDelete } from "./ts/functions.js";
-
-const modalOpen = document.querySelector(".modal-open");
-const modalBg = document.querySelector(".modal-bg");
-modalOpen?.addEventListener("click", function () {
-  modalBg?.classList.add("active");
-});
+import { modalBg, emptyModalInputs } from "./ts/modal.js";
+import "./ts/modal.js";
 
 const taskName = document.querySelector("#name") as HTMLInputElement;
 const taskDescription = document.querySelector("#desc") as HTMLInputElement;
@@ -25,18 +21,28 @@ taskSubmit?.addEventListener("click", function (event) {
 
   taskContainer?.insertAdjacentHTML(
     "afterbegin",
-    `<div class="single-task" style='display: flex;'><p>${newTaskPrint}</p><div class="btn"></div></div>`
+    `<div class="single-task">${newTaskPrint}<div class="single-btn"></div></div>`
   );
+
+  emptyModalInputs();
 
   if (modalBg?.classList.contains("active")) {
     (modalBg as HTMLElement).classList.remove("active");
   }
 });
 
-const btnCheck = document.querySelector("#btn-check");
-btnCheck?.addEventListener("click", function () {
-  const btnNode = document.querySelectorAll(".btn");
-  console.log(btnNode);
-});
-
 taskContainer?.addEventListener("click", taskDelete);
+
+// textarea placeholder
+const textareaPlaceholder = document.querySelector(
+  ".textarea-placeholder"
+) as HTMLElement;
+taskDescription.addEventListener("input", function () {
+  if (textareaPlaceholder) {
+    if (this.value.length > 0) {
+      textareaPlaceholder.style.display = "none";
+    } else {
+      textareaPlaceholder.style.display = "block";
+    }
+  }
+});

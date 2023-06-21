@@ -10,6 +10,9 @@ export class Task {
   }
 
   print() {
-    return `${this.name} - ${this.description} - ${this.days}`;
+    const returnName = `<h3>${this.name}</h3>`;
+    const returnDescription = `<p>${this.description}</p>`;
+    const returnDays = `<p>${this.days} days</p>`;
+    return `${returnDays}${returnName}${returnDescription}`;
   }
 }

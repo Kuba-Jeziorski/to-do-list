@@ -1,0 +1,35 @@
+$primary: #354649;
+$secondary: #6c7a89;
+$tertiary: #a3c6c4;
+$quatenary: #e0e7e9;
+
+$dark: rgba(0, 0, 0, 0.7);
+
+$fs: 18px;
+
+$textarea-height: 100px;
+
+$flex-classes: (
+  "nw": (
+    "flex-wrap": nowrap,
+  ),
+  "w": (
+    "flex-wrap": wrap,
+  ),
+  "col": (
+    "flex-direction": column,
+  ),
+  "c": (
+    "align-items": center,
+    "justify-content": center,
+  ),
+  "sb": (
+    "justify-content": space-between,
+  ),
+  "aic": (
+    "align-items": center,
+  ),
+  "jcc": (
+    "justify-content": center,
+  ),
+);

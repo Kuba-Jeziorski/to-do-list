@@ -1,0 +1,18 @@
+/* cairo-400 - latin_latin-ext */
+@font-face {
+  font-display: swap;
+  font-family: "Cairo";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../src/fonts/cairo-v28-latin_latin-ext-regular.woff2")
+    format("woff2");
+}
+
+/* cairo-700 - latin_latin-ext */
+@font-face {
+  font-display: swap;
+  font-family: "Cairo";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../src/fonts/cairo-v28-latin_latin-ext-700.woff2") format("woff2");
+}

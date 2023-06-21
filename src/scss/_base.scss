@@ -1,36 +1,236 @@
 * {
-  font-family: sans-serif;
+  @include font;
   box-sizing: border-box;
 }
 
 html {
   @include default;
+  @include fullSize;
 }
 
 body {
   @include default;
-  background: #000;
-  color: white;
+  @include fullSize;
+  font-size: $fs;
+  background: $quatenary;
+  color: $primary;
+  line-height: 1.5;
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px $secondary;
+    margin: 0 0 10px;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: $primary;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: $primary;
+  }
 }
 
-.btn {
-  width: 20px;
-  height: 20px;
-  border: 1px solid lime;
-  cursor: pointer;
+h1,
+h2,
+h3 {
+  @include default;
 }
 
-.test-container {
-  width: 500px;
-  min-height: 300px;
-  border: 1px solid red;
-  margin: 100px 0 0;
-  display: flex;
-  flex-direction: column;
+h1 {
+  font-size: 40px;
 }
 
 h2 {
-  text-align: center;
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 25px;
+}
+
+strong {
+  @include font(700);
+}
+
+textarea {
+  resize: none;
+  height: $textarea-height;
+  min-height: $textarea-height;
+  overflow: auto;
+
+  &::placeholder {
+    line-height: calc($textarea-height);
+  }
+}
+
+select {
+  font-size: $fs;
+  color: $secondary;
+  width: 100%;
+  padding: 0 0 5px;
+  // appearance: none;
+  border: none;
+  background: transparent;
+  outline: transparent;
+  border-bottom: 1px solid $secondary;
+  cursor: pointer;
+
+  option {
+    background: $tertiary;
+  }
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+
+  input[type="submit"] {
+    color: $tertiary;
+    line-height: 1;
+    width: 120px;
+    height: 35px;
+    border-radius: 5px;
+    background: $secondary;
+    transition: background 0.3s;
+    cursor: pointer;
+
+    &:hover {
+      background: $primary;
+    }
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    font-size: $fs;
+    color: $secondary;
+    outline: transparent;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid $secondary;
+    transition: border-bottom 0.3s, color 0.3s;
+
+    &:active,
+    &:focus,
+    &:focus-visible {
+      border-bottom: 1px solid $primary;
+      color: $primary;
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+  }
+}
+
+::placeholder {
+  color: $secondary;
+  background: transparent;
+}
+
+.text {
+  &-centered {
+    text-align: center;
+  }
+}
+
+.flex {
+  @each $class, $properties in $flex-classes {
+    &-#{$class} {
+      @each $property, $value in $properties {
+        #{$property}: $value;
+      }
+      display: flex;
+    }
+  }
+}
+
+.container {
+  width: 50%;
+
+  &-full {
+    width: 100%;
+  }
+
+  &-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &-task {
+    &-active,
+    &-finished {
+      border: 1px solid $primary;
+      min-height: 55px;
+      background: $secondary;
+      border-radius: 10px;
+    }
+  }
+
+  &-inside {
+    max-height: 400px;
+    overflow: auto;
+  }
+}
+
+.padding {
+  &-default {
+    padding: 100px 0;
+  }
+
+  &-omni {
+    padding: 40px;
+  }
+}
+
+.textarea {
+  &-placeholder {
+    color: $secondary;
+    position: absolute;
+    bottom: 0.5 * $fs;
+    left: 0;
+    pointer-events: none;
+  }
+
+  &-wrapper {
+    position: relative;
+  }
+}
+
+.margin {
+  &-auto {
+    margin: 0 auto;
+  }
+
+  &-default {
+    margin: 50px 0 0;
+  }
+}
+
+.position {
+  &-relative {
+    position: relative;
+  }
+
+  &-absolute {
+    position: absolute;
+  }
 }
 
 #container {
@@ -38,8 +238,31 @@ h2 {
   flex-direction: column;
 }
 
-.single-task {
-  display: flex;
+.single {
+  &-task {
+    display: flex;
+    flex-direction: column;
+    padding: 0 30px;
+    position: relative;
+    width: calc(100% - 20px);
+    margin: 0 auto 10px;
+    border: 1px solid $secondary;
+    border-radius: 10px;
+    background: $tertiary;
+  }
+
+  &-btn {
+    width: 20px;
+    aspect-ratio: 1;
+    border: 1px solid red;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    @include backgroundSetup;
+    background-image: url(/src/img/close-sign.svg);
+  }
 }
 
 #btn-check {
@@ -47,13 +270,6 @@ h2 {
   height: 20px;
   border: 1px solid yellow;
   cursor: pointer;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  gap: 20px;
 }
 
 .modal {
@@ -65,15 +281,13 @@ form {
   }
 
   &-bg {
-    // display: none;
+    @include fullSize;
     visibility: hidden;
     opacity: 0;
     position: fixed;
-    background: rgba(255, 255, 255, 0.3);
+    background: $dark;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
     z-index: 10;
     transition: visibility 0.3s, opacity 0.3s;
 
@@ -88,13 +302,22 @@ form {
   }
 
   &-content {
+    @include centered;
+    background: $tertiary;
     display: none;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    width: 300px;
-    height: 300px;
-    border: 1px solid lime;
+    width: 500px;
+    gap: 20px;
+    border-radius: 10px;
+  }
+
+  &-close {
+    @include backgroundSetup;
+    top: 10px;
+    right: 10px;
+    width: 15px;
+    aspect-ratio: 1;
+    background-image: url(/src/img/close-sign.svg);
+    cursor: pointer;
   }
 }
