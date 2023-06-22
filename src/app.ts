@@ -1,22 +1,25 @@
 import { Task } from "./ts/task.js";
-import { taskDelete } from "./ts/functions.js";
+import { taskDelete, taskToggle, daysRemaining } from "./ts/functions.js";
 import { modalBg, emptyModalInputs } from "./ts/modal.js";
 import "./ts/modal.js";
 
 const taskName = document.querySelector("#name") as HTMLInputElement;
 const taskDescription = document.querySelector("#desc") as HTMLInputElement;
-const taskDays = document.querySelector("#num") as HTMLInputElement;
 const taskSubmit = document.querySelector("#submit") as HTMLElement;
 const taskContainer = document.querySelector("#container");
+
+const taskCategories = document.querySelector("#sel") as HTMLSelectElement;
+const taskDeadline = document.querySelector("#date") as HTMLInputElement;
 
 taskSubmit?.addEventListener("click", function (event) {
   event.preventDefault();
 
   const name = taskName.value;
   const description = taskDescription.value;
-  const days = +taskDays.value;
+  const deadline = daysRemaining(taskDeadline);
+  const category = taskCategories.options[taskCategories.selectedIndex].text;
 
-  const newTask = new Task(name, description, days);
+  const newTask = new Task(name, description, deadline, category);
   const newTaskPrint = newTask.print();
 
   taskContainer?.insertAdjacentHTML(
@@ -46,3 +49,5 @@ taskDescription.addEventListener("input", function () {
     }
   }
 });
+
+taskContainer?.addEventListener("click", taskToggle);

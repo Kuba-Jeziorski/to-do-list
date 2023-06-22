@@ -54,6 +54,10 @@ h3 {
   font-size: 25px;
 }
 
+p {
+  @include default;
+}
+
 strong {
   @include font(700);
 }
@@ -242,26 +246,49 @@ form {
   &-task {
     display: flex;
     flex-direction: column;
-    padding: 0 30px;
+    padding: 10px 30px;
     position: relative;
     width: calc(100% - 20px);
     margin: 0 auto 10px;
     border: 1px solid $secondary;
     border-radius: 10px;
     background: $tertiary;
+
+    &.open {
+      .single {
+        &-description {
+          display: flex;
+          // visibility: visible;
+          // opacity: 1;
+        }
+      }
+    }
   }
 
   &-btn {
     width: 20px;
     aspect-ratio: 1;
     border: 1px solid red;
-    border-radius: 50%;
+    border-radius: 6px;
     cursor: pointer;
     position: absolute;
     top: 5px;
     right: 5px;
     @include backgroundSetup;
     background-image: url(/src/img/close-sign.svg);
+  }
+
+  &-days,
+  &-description,
+  &-category {
+    font-size: 14px;
+  }
+
+  &-description {
+    display: none;
+    // visibility: hidden;
+    // opacity: 0;
+    // transition: opacity 0.3s, visibility 0.3s;
   }
 }
 

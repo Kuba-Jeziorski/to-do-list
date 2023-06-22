@@ -13,20 +13,7 @@
       <h1 class="text-centered">TODO LIST</h1>
       <div class="container-task-active container-full flex-col">
         <h2 class="text-centered">Active tasks</h2>
-        <div class="container-inside" id="container">
-          <!-- <div class="single-task">
-            <p>dum - mmy - 0</p>
-          <div class="btn"></div>
-          </div>
-          <div class="single-task">
-            <p>test - ing - 1</p>
-          <div class="btn"></div>
-          </div>
-          <div class="single-task">
-            <p>cont - ent - 2</p>
-          <div class="btn"></div>
-          </div> -->
-        </div>
+        <div class="container-inside" id="container"></div>
       </div>
       <div
         class="container-task-finished container-full margin-default flex-col"
@@ -45,15 +32,16 @@
               <textarea type="text" id="desc"></textarea>
               <div class="textarea-placeholder">Task description...</div>
             </div>
-            <input type="number" placeholder="Days till deadline..." id="num" />
+            <!-- <input type="number" placeholder="Days till deadline..." id="num" /> -->
+            <input type="date" placeholder="Deadline date..." id="date" />
             <select name="abc" id="sel" required>
               <option value="0" disabled selected>Select task category:</option>
-              <option value="1">Category 1</option>
-              <option value="2">Category 2</option>
-              <option value="3">Category 3</option>
-              <option value="4">Category 4</option>
-              <option value="5">Category 5</option>
-              <option value="6">Category 6</option>
+              <option value="1">Personal</option>
+              <option value="2">Work</option>
+              <option value="3">Education</option>
+              <option value="4">Social</option>
+              <option value="5">Travel</option>
+              <option value="6">Hobbies</option>
             </select>
             <input
               type="submit"

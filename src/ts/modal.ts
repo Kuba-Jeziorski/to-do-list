@@ -8,7 +8,7 @@ export const emptyModalInputs = function () {
   modalInputs.forEach((input) => {
     if ((input as HTMLInputElement).type === "text") {
       (input as HTMLInputElement).value = "";
-    } else if ((input as HTMLInputElement).type === "number") {
+    } else if ((input as HTMLInputElement).type === "date") {
       (input as HTMLInputElement).value = "";
     } else {
       console.log(`nothing`);
