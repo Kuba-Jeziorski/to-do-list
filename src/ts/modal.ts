@@ -1,17 +1,21 @@
-const modalOpen = document.querySelector(".modal-open");
-export const modalBg = document.querySelector(".modal-bg");
-const modalClose = document.querySelector(".modal-close");
+import {
+  taskDescription,
+  modalOpen,
+  modalClose,
+  modalBg,
+  modalInputs,
+  modalTextarea,
+} from "./variables.js";
 
-export const emptyModalInputs = function () {
-  const modalInputs = document.querySelectorAll("#form input");
-  const modalTextarea = document.querySelector("#desc");
+import { placeholderDisplayChange } from "./functions.js";
+
+export const clearModalInputs = function () {
   modalInputs.forEach((input) => {
-    if ((input as HTMLInputElement).type === "text") {
-      (input as HTMLInputElement).value = "";
-    } else if ((input as HTMLInputElement).type === "date") {
+    const inputType: string = (input as HTMLInputElement).type;
+
+    if (inputType === "text" || inputType === "date") {
       (input as HTMLInputElement).value = "";
     } else {
-      console.log(`nothing`);
     }
   });
   (modalTextarea as HTMLTextAreaElement).value = "";
@@ -30,3 +34,5 @@ document.addEventListener("keydown", function (event) {
     modalBg.classList.remove("active");
   }
 });
+
+taskDescription.addEventListener("input", placeholderDisplayChange);

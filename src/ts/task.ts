@@ -1,9 +1,28 @@
+import {
+  taskDelete,
+  taskToggle,
+  daysRemaining,
+  createdDiv,
+} from "./functions.js";
+
+import {
+  modalBg,
+  taskName,
+  taskDescription,
+  taskContainer,
+  taskCategories,
+  taskDeadline,
+} from "./variables.js";
+
+import { clearModalInputs } from "./modal.js";
+
 export class Task {
   name: string;
   description: string;
   deadline: any;
   category: string;
-  id: number = Math.floor(Math.random() * 1000);
+  private static idCounter: number = 0;
+  public id: number;
 
   constructor(
     name: string,
@@ -15,6 +34,8 @@ export class Task {
     this.description = description;
     this.deadline = deadline;
     this.category = category;
+    this.id = Task.idCounter;
+    Task.idCounter++;
   }
 
   print() {
@@ -22,7 +43,28 @@ export class Task {
     const returnDescription = `<p class="single-description">${this.description}</p>`;
     const returnDaysRemaining = `<p class="single-days">${this.deadline} days till deadline</p>`;
     const returnCatrgory = `<p class="single-category">${this.category}</p>`;
-    console.log(this.id);
-    return `${returnDaysRemaining}${returnName}${returnCatrgory}${returnDescription}`;
+    const returnId = `<p class="single-id">id: ${this.id}</p>`;
+    return `${returnDaysRemaining}${returnName}${returnCatrgory}${returnDescription}${returnId}`;
   }
 }
+
+export const creatingTask = function () {
+  const name = taskName.value;
+  const description = taskDescription.value;
+  const category = taskCategories.options[taskCategories.selectedIndex].text;
+  const deadline = daysRemaining(taskDeadline);
+
+  const newTask = new Task(name, description, deadline, category);
+  const newTaskPrint = newTask.print();
+
+  taskContainer?.insertAdjacentHTML("afterbegin", createdDiv(newTaskPrint));
+
+  clearModalInputs();
+
+  if (modalBg?.classList.contains("active")) {
+    (modalBg as HTMLElement).classList.remove("active");
+  }
+};
+
+taskContainer?.addEventListener("click", taskDelete);
+taskContainer?.addEventListener("click", taskToggle);

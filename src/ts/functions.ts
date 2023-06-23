@@ -1,17 +1,18 @@
+import { taskDescription, textareaPlaceholder } from "./variables.js";
+
 export const taskDelete = function (event: any) {
   const target = event.target;
   if (!target.classList.contains("single-btn")) return;
-  console.log(target);
   const parent = target.closest(".single-task");
   const btnNode = document.querySelectorAll(".single-btn");
   const btnNodeArr = [...btnNode];
-  console.log(btnNodeArr);
   const clickedElement = btnNodeArr.indexOf(target);
   console.log(
-    `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}`
+    `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}. ${
+      btnNodeArr.length - 1
+    } tasks left.`
   );
   parent.remove();
-  console.log(`${btnNodeArr.length - 1} tasks left`);
 };
 
 export const taskToggle = function (event: any) {
@@ -35,4 +36,23 @@ export const daysRemaining = function (date: any) {
   const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
   return daysRemaining;
+};
+
+export const placeholderDisplayChange = function () {
+  if (textareaPlaceholder) {
+    if (taskDescription.value.length > 0) {
+      textareaPlaceholder.style.display = "none";
+    } else {
+      textareaPlaceholder.style.display = "block";
+    }
+  }
+};
+
+export const createdDiv = function (data: string) {
+  return `<div class="single-task">${data}
+  <div class="single-btn">
+  </div>
+  <div class="single-state">
+  </div>
+</div>`;
 };
