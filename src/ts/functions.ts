@@ -1,6 +1,11 @@
-import { taskDescription, textareaPlaceholder } from "./variables.js";
+import {
+  taskContainerActive,
+  taskContainerFinished,
+  taskDescription,
+  textareaPlaceholder,
+} from "./variables.js";
 
-export const taskDelete = function (event: any) {
+const taskDelete = function (event: any) {
   const target = event.target;
   if (!target.classList.contains("single-btn")) return;
   const parent = target.closest(".single-task");
@@ -15,10 +20,15 @@ export const taskDelete = function (event: any) {
   parent.remove();
 };
 
-export const taskToggle = function (event: any) {
+const taskToggle = function (event: any) {
   const target = event.target;
-  const closestSingleTask = target.closest(".single-task");
-  closestSingleTask.classList.toggle("open");
+  if (
+    !target.classList.contains("single-state") &&
+    !target.classList.contains("single-edit")
+  ) {
+    const closestSingleTask = target.closest(".single-task");
+    closestSingleTask.classList.toggle("open");
+  }
 };
 
 export const daysRemaining = function (date: any) {
@@ -54,5 +64,44 @@ export const createdDiv = function (data: string) {
   </div>
   <div class="single-state">
   </div>
+  <div class="single-edit">
+  </div>
 </div>`;
+};
+
+const stateChange = function (event: any) {
+  const target = event.target;
+  if (target.classList.contains("single-state")) {
+    const closestTaskState = target.closest(".single-state");
+    const closestSingleTask = target.closest(".single-task");
+    closestTaskState.classList.toggle("finished");
+    closestSingleTask.classList.toggle("finished");
+  }
+};
+
+const containerChange = function (event: any) {
+  const target = event.target;
+  if (target.classList.contains("single-state")) {
+    const closestSingleTask = target.closest(".single-task");
+    if (target.classList.contains("finished")) {
+      taskContainerFinished?.appendChild(closestSingleTask);
+    } else {
+      taskContainerActive?.appendChild(closestSingleTask);
+    }
+  }
+};
+
+export const taskContainerFunctions = function (event: any) {
+  taskDelete(event);
+  taskToggle(event);
+  stateChange(event);
+  containerChange(event);
+  openEditModal(event);
+};
+
+const openEditModal = function (event: any) {
+  const target = event.target;
+  if (target.classList.contains("single-edit")) {
+    console.log(`editing single task`);
+  }
 };

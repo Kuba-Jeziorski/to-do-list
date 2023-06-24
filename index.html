@@ -5,20 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="dist/app.css" />
     <script type="module" defer src="dist/app.js"></script>
+    <link rel="icon" type="image/x-icon" href="/src/img/todo-list.png" />
     <title>To Do List</title>
   </head>
   <body>
     <div class="container-wrapper padding-default">
-      <div class="modal-open">OPEN</div>
+      <div class="modal-open">ADD NEW</div>
       <h1 class="text-centered">TODO LIST</h1>
       <div class="container-task-active container-full flex-col">
         <h2 class="text-centered">Active tasks</h2>
-        <div class="container-inside" id="container"></div>
+        <div class="container-inside" id="container-active"></div>
       </div>
       <div
         class="container-task-finished container-full margin-default flex-col"
       >
         <h2 class="text-centered">Finished tasks</h2>
+        <div class="container-inside" id="container-finished"></div>
       </div>
       <div class="modal-bg">
         <div

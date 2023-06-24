@@ -5,11 +5,16 @@ export const modalOpen = document.querySelector(".modal-open");
 export const modalTextarea = document.querySelector("#desc");
 // prettier-ignore
 export const taskCategories = document.querySelector("#sel") as HTMLSelectElement;
-export const taskContainer = document.querySelector("#container");
+export const taskContainerActive = document.querySelector("#container-active");
+// prettier-ignore
+export const taskContainerFinished = document.querySelector("#container-finished");
+// prettier-ignore
 export const taskDeadline = document.querySelector("#date") as HTMLInputElement;
 // prettier-ignore
 export const taskDescription = document.querySelector("#desc") as HTMLInputElement;
+export const taskEdit = document.querySelector(".single-edit") as HTMLElement;
 export const taskName = document.querySelector("#name") as HTMLInputElement;
+export const taskState = document.querySelector(".single-state") as HTMLElement;
 export const taskSubmit = document.querySelector("#submit") as HTMLElement;
 // prettier-ignore
 export const textareaPlaceholder = document.querySelector(".textarea-placeholder") as HTMLElement;

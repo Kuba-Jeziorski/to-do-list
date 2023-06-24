@@ -147,6 +147,21 @@ form {
   background: transparent;
 }
 
+#btn-check {
+  width: 50px;
+  height: 20px;
+  border: 1px solid yellow;
+  cursor: pointer;
+}
+
+#container {
+  &-active,
+  &-finished {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .text {
   &-centered {
     text-align: center;
@@ -237,11 +252,6 @@ form {
   }
 }
 
-#container {
-  display: flex;
-  flex-direction: column;
-}
-
 .single {
   &-task {
     display: flex;
@@ -267,12 +277,13 @@ form {
   }
 
   &-btn,
-  &-state {
+  &-state,
+  &-edit {
     @include backgroundSetup;
     position: absolute;
     right: 5px;
     width: 20px;
-    aspect-ratio: 1;
+    height: 20px;
     border-radius: 6px;
     cursor: pointer;
   }
@@ -280,13 +291,44 @@ form {
   &-btn {
     top: 5px;
     border: 1px solid red;
-    background-image: url(/src/img/close-sign.svg);
+    // background-image: url(/src/img/close-sign.svg);
+    background-color: transparent;
+
+    &::before {
+      content: "D";
+      font-size: 18px;
+      position: absolute;
+      top: -4px;
+      left: 4px;
+    }
   }
 
   &-state {
-    top: 40px;
+    top: 30px;
     border: 1px solid $primary;
     background-color: transparent;
+
+    &::before {
+      content: "S";
+      font-size: 18px;
+      position: absolute;
+      top: -4px;
+      left: 4px;
+    }
+  }
+
+  &-edit {
+    top: 55px;
+    border: 1px solid $primary;
+    background-color: transparent;
+
+    &::before {
+      content: "E";
+      font-size: 18px;
+      position: absolute;
+      top: -4px;
+      left: 4px;
+    }
   }
 
   &-category {
@@ -315,17 +357,10 @@ form {
   }
 }
 
-#btn-check {
-  width: 50px;
-  height: 20px;
-  border: 1px solid yellow;
-  cursor: pointer;
-}
-
 .modal {
   &-open {
-    height: 20px;
-    width: 50px;
+    height: 25px;
+    width: 80px;
     background-color: red;
     cursor: pointer;
   }

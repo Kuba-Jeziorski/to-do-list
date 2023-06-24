@@ -1,17 +1,18 @@
 import {
-  taskDelete,
-  taskToggle,
-  daysRemaining,
   createdDiv,
+  daysRemaining,
+  taskContainerFunctions,
 } from "./functions.js";
 
 import {
   modalBg,
   taskName,
   taskDescription,
-  taskContainer,
+  taskContainerActive,
+  taskContainerFinished,
   taskCategories,
   taskDeadline,
+  // taskEdit,
 } from "./variables.js";
 
 import { clearModalInputs } from "./modal.js";
@@ -57,7 +58,10 @@ export const creatingTask = function () {
   const newTask = new Task(name, description, deadline, category);
   const newTaskPrint = newTask.print();
 
-  taskContainer?.insertAdjacentHTML("afterbegin", createdDiv(newTaskPrint));
+  taskContainerActive?.insertAdjacentHTML(
+    "afterbegin",
+    createdDiv(newTaskPrint)
+  );
 
   clearModalInputs();
 
@@ -66,5 +70,5 @@ export const creatingTask = function () {
   }
 };
 
-taskContainer?.addEventListener("click", taskDelete);
-taskContainer?.addEventListener("click", taskToggle);
+taskContainerActive?.addEventListener("click", taskContainerFunctions);
+taskContainerFinished?.addEventListener("click", taskContainerFunctions);

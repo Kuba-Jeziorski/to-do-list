@@ -1,5 +1,6 @@
 import {
   taskDescription,
+  textareaPlaceholder,
   modalOpen,
   modalClose,
   modalBg,
@@ -10,6 +11,8 @@ import {
 import { placeholderDisplayChange } from "./functions.js";
 
 export const clearModalInputs = function () {
+  textareaPlaceholder.style.display = "block";
+
   modalInputs.forEach((input) => {
     const inputType: string = (input as HTMLInputElement).type;
 
