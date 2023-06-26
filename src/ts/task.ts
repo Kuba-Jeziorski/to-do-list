@@ -12,6 +12,7 @@ import {
   taskContainerFinished,
   taskCategories,
   taskDeadline,
+  taskInstances,
   // taskEdit,
 } from "./variables.js";
 
@@ -44,8 +45,11 @@ export class Task {
     const returnDescription = `<p class="single-description">${this.description}</p>`;
     const returnDaysRemaining = `<p class="single-days">${this.deadline} days till deadline</p>`;
     const returnCatrgory = `<p class="single-category">${this.category}</p>`;
-    const returnId = `<p class="single-id">id: ${this.id}</p>`;
-    return `${returnDaysRemaining}${returnName}${returnCatrgory}${returnDescription}${returnId}`;
+    return `${returnDaysRemaining}${returnName}${returnCatrgory}${returnDescription}`;
+  }
+
+  idAttribute() {
+    return this.id;
   }
 }
 
@@ -56,11 +60,13 @@ export const creatingTask = function () {
   const deadline = daysRemaining(taskDeadline);
 
   const newTask = new Task(name, description, deadline, category);
+  taskInstances.push(newTask);
   const newTaskPrint = newTask.print();
+  const newTaskID = newTask.idAttribute();
 
   taskContainerActive?.insertAdjacentHTML(
     "afterbegin",
-    createdDiv(newTaskPrint)
+    createdDiv(newTaskID, newTaskPrint)
   );
 
   clearModalInputs();

@@ -2,6 +2,7 @@ import {
   taskContainerActive,
   taskContainerFinished,
   taskDescription,
+  taskInstances,
   textareaPlaceholder,
 } from "./variables.js";
 
@@ -58,15 +59,17 @@ export const placeholderDisplayChange = function () {
   }
 };
 
-export const createdDiv = function (data: string) {
-  return `<div class="single-task">${data}
-  <div class="single-btn">
-  </div>
-  <div class="single-state">
-  </div>
-  <div class="single-edit">
-  </div>
-</div>`;
+export const createdDiv = function (id: number, data: string) {
+  return `
+  <div class="single-task" data-task-id="${id}">
+  ${data}
+    <div class="single-btn">
+    </div>
+    <div class="single-state">
+    </div>
+    <div class="single-edit">
+    </div>
+  </div>`;
 };
 
 const stateChange = function (event: any) {
@@ -91,17 +94,21 @@ const containerChange = function (event: any) {
   }
 };
 
+const taskAttributeID = function (event: any) {
+  return event.closest(".single-task").getAttribute("data-task-id");
+};
+
+const openEditModal = function (event: any) {
+  const target = event.target;
+  if (target.classList.contains("single-edit")) {
+    console.log(taskInstances[taskAttributeID(target)]);
+  }
+};
+
 export const taskContainerFunctions = function (event: any) {
   taskDelete(event);
   taskToggle(event);
   stateChange(event);
   containerChange(event);
   openEditModal(event);
-};
-
-const openEditModal = function (event: any) {
-  const target = event.target;
-  if (target.classList.contains("single-edit")) {
-    console.log(`editing single task`);
-  }
 };

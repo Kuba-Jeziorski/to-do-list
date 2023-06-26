@@ -344,16 +344,11 @@ form {
     font-size: 14px;
   }
 
-  &-description,
-  &-id {
+  &-description {
     display: none;
     // visibility: hidden;
     // opacity: 0;
     // transition: opacity 0.3s, visibility 0.3s;
-  }
-
-  &-id {
-    font-size: 10px;
   }
 }
 

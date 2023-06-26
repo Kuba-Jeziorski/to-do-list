@@ -13,6 +13,7 @@ export const taskDeadline = document.querySelector("#date") as HTMLInputElement;
 // prettier-ignore
 export const taskDescription = document.querySelector("#desc") as HTMLInputElement;
 export const taskEdit = document.querySelector(".single-edit") as HTMLElement;
+export const taskInstances: object[] = [];
 export const taskName = document.querySelector("#name") as HTMLInputElement;
 export const taskState = document.querySelector(".single-state") as HTMLElement;
 export const taskSubmit = document.querySelector("#submit") as HTMLElement;
