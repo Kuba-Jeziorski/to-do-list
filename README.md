@@ -20,3 +20,9 @@ Extra features (future):
 
 1. Task state change with drag: particular task can be moved with drag between states.
 2. Database: tasks are stored in database (done with Firebase).
+
+To open this project:
+1. npm install
+2. npm install sass --save-dev
+3. npm run js
+4. npm run css
