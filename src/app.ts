@@ -1,6 +1,7 @@
-import { taskUpdate } from "./ts/functions.js";
-import { creatingTask } from "./ts/task.js";
-import { taskSubmit, modalTitle } from "./ts/variables.js";
+import { taskUpdate } from "./ts/functions";
+import { creatingTask } from "./ts/task";
+import { taskSubmit, modalTitle } from "./ts/variables";
+// import "./styles.scss";
 
 taskSubmit?.addEventListener("click", function (event) {
   event.preventDefault();

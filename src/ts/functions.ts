@@ -9,7 +9,7 @@ import {
   modalTitle,
   modalBg,
   taskName,
-} from "./variables.js";
+} from "./variables";
 
 const containerChange = function (event: any) {
   const target = event.target;

@@ -6,9 +6,9 @@ import {
   modalBg,
   modalInputs,
   modalTextarea,
-} from "./variables.js";
+} from "./variables";
 
-import { placeholderDisplayChange, modalOpening } from "./functions.js";
+import { placeholderDisplayChange, modalOpening } from "./functions";
 
 export const clearModalInputs = function () {
   textareaPlaceholder.style.display = "block";

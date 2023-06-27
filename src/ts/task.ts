@@ -1,8 +1,4 @@
-import {
-  createdDiv,
-  daysRemaining,
-  taskContainerFunctions,
-} from "./functions.js";
+import { createdDiv, daysRemaining, taskContainerFunctions } from "./functions";
 
 import {
   modalBg,
@@ -13,9 +9,9 @@ import {
   taskCategories,
   taskDeadline,
   taskInstances,
-} from "./variables.js";
+} from "./variables";
 
-import { clearModalInputs } from "./modal.js";
+import { clearModalInputs } from "./modal";
 
 export class Task {
   name: string;
