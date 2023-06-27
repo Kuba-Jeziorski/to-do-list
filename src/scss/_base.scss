@@ -255,6 +255,7 @@ form {
 .single {
   &-task {
     display: flex;
+    min-height: 81px;
     flex-direction: column;
     padding: 10px 30px;
     position: relative;
