@@ -23,6 +23,4 @@ Extra features (future):
 
 To open this project:
 1. npm install
-2. npm install sass --save-dev
-3. npm run js
-4. npm run css
+2. npm run build or npm run watch
