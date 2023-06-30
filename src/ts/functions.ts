@@ -164,6 +164,6 @@ export const taskContainerFunctions = function (event: any) {
 };
 
 export const taskUpdate = function () {
-  // update values of instance
+  // update values of an instance
   console.log(`Task updated - new values in this instance`);
 };
