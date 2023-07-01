@@ -1,14 +1,16 @@
 import {
+  modalBg,
+  modalInputs,
+  modalTextarea,
+  modalTitle,
   taskContainerActive,
   taskContainerFinished,
   taskDescription,
   taskInstances,
-  textareaPlaceholder,
+  taskName,
   taskCategories,
   taskDeadline,
-  modalTitle,
-  modalBg,
-  taskName,
+  textareaPlaceholder,
 } from "./variables";
 
 const containerChange = function (event: any) {
@@ -36,7 +38,11 @@ const fillingEditInputs = function (event: any) {
   if (taskDescription) {
     // prettier-ignore
     taskDescription.value = (taskInstance as { description: string }).description;
-    textareaPlaceholder.style.display = "none";
+    if (taskDescription.value == "") {
+      textareaPlaceholder.style.display = "block";
+    } else {
+      textareaPlaceholder.style.display = "none";
+    }
   }
 
   if (taskCategories) {
@@ -52,20 +58,31 @@ const fillingEditInputs = function (event: any) {
 
   if (taskDeadline) {
     const daysTillDeadline = (taskInstance as { deadline: number }).deadline;
-    const currentDate = new Date();
-    // prettier-ignore
-    const dateOfDeadline = new Date(currentDate.setDate(currentDate.getDate() + daysTillDeadline));
-    const dataInputValue = dateOfDeadline.toISOString().split("T")[0];
-    taskDeadline.value = dataInputValue;
+
+    if (isNaN(daysTillDeadline)) {
+      taskDeadline.value = "";
+    } else {
+      const currentDate = new Date();
+      // prettier-ignore
+      const dateOfDeadline = new Date(currentDate.setDate(currentDate.getDate() + daysTillDeadline));
+      const dataInputValue = dateOfDeadline.toISOString().split("T")[0];
+      taskDeadline.value = dataInputValue;
+    }
   }
 };
 
-const openEditModal = function (event: any) {
+let editedTaskID = 0;
+const openEditModal = function (event: any): number {
   const target = event.target;
   if (target.classList.contains("single-edit")) {
     modalOpening("EDITING TASK");
     fillingEditInputs(event);
+
+    const taskInstance = taskInstances[taskAttributeID(target)];
+    editedTaskID = (taskInstance as { id: number }).id;
+    return editedTaskID;
   }
+  return 1;
 };
 
 const stateChange = function (event: any) {
@@ -121,6 +138,22 @@ export const createdDiv = function (id: number, data: string) {
   </div>`;
 };
 
+export const clearModalInputs = function () {
+  textareaPlaceholder.style.display = "block";
+
+  modalInputs.forEach((input) => {
+    if (
+      (input as HTMLInputElement).type === "text" ||
+      (input as HTMLInputElement).type === "date"
+    ) {
+      (input as HTMLInputElement).value = "";
+    }
+  });
+  (modalTextarea as HTMLTextAreaElement).value = "";
+
+  taskCategories.selectedIndex = 0;
+};
+
 export const daysRemaining = function (date: any) {
   const futureDateString = date.value;
 
@@ -164,6 +197,38 @@ export const taskContainerFunctions = function (event: any) {
 };
 
 export const taskUpdate = function () {
-  // update values of an instance
-  console.log(`Task updated - new values in this instance`);
+  console.log(`Task changed from:`);
+  console.log(taskInstances[editedTaskID]);
+
+  const newName = taskName.value;
+  const newDescription = taskDescription.value;
+  const newCategory = taskCategories.options[taskCategories.selectedIndex].text;
+  const newDeadline = daysRemaining(taskDeadline);
+
+  (taskInstances[editedTaskID] as { name: string }).name = newName;
+  // prettier-ignore
+  (taskInstances[editedTaskID] as { description: string }).description = newDescription;
+  (taskInstances[editedTaskID] as { category: string }).category = newCategory;
+  (taskInstances[editedTaskID] as { deadline: number }).deadline = newDeadline;
+
+  console.log(`Task changed to:`);
+  console.log(taskInstances[editedTaskID]);
+
+  // prettier-ignore
+  const currentTask = document.querySelector(`.single-task[data-task-id="${editedTaskID}"]`);
+  // prettier-ignore
+  let currentTaskDays = currentTask?.querySelector(".single-days") as HTMLDivElement;
+  // prettier-ignore
+  let currentTaskName = currentTask?.querySelector(".single-name") as HTMLDivElement;
+  // prettier-ignore
+  let currentTaskCategory = currentTask?.querySelector(".single-category") as HTMLDivElement;
+  // prettier-ignore
+  let currentTaskDescription = currentTask?.querySelector(".single-description") as HTMLDivElement;
+
+  // prettier-ignore
+  currentTaskDays.textContent = `${newDeadline.toString()} ${Math.abs(newDeadline) === 1 ? "day" : "days"} ${newDeadline >= 0 ? "till" : "past"} deadline`;
+
+  currentTaskName.textContent = newName;
+  currentTaskCategory.textContent = newCategory;
+  currentTaskDescription.textContent = newDescription;
 };

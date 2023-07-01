@@ -1,29 +1,12 @@
+import { taskDescription, modalOpen, modalClose, modalBg } from "./variables";
+
 import {
-  taskDescription,
-  textareaPlaceholder,
-  modalOpen,
-  modalClose,
-  modalBg,
-  modalInputs,
-  modalTextarea,
-} from "./variables";
+  clearModalInputs,
+  placeholderDisplayChange,
+  modalOpening,
+} from "./functions";
 
-import { placeholderDisplayChange, modalOpening } from "./functions";
-
-export const clearModalInputs = function () {
-  textareaPlaceholder.style.display = "block";
-
-  modalInputs.forEach((input) => {
-    if (
-      (input as HTMLInputElement).type === "text" ||
-      (input as HTMLInputElement).type === "date"
-    ) {
-      (input as HTMLInputElement).value = "";
-    }
-  });
-  (modalTextarea as HTMLTextAreaElement).value = "";
-};
-
+export const consoleModal = `artificial linking to module.ts`;
 modalOpen?.addEventListener("click", () => modalOpening("NEW TASK"));
 
 modalClose?.addEventListener("click", function () {
@@ -39,3 +22,5 @@ document.addEventListener("keydown", function (event) {
 });
 
 taskDescription.addEventListener("input", placeholderDisplayChange);
+
+modalOpen?.addEventListener("click", function () {});

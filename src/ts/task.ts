@@ -1,7 +1,6 @@
 import { createdDiv, daysRemaining, taskContainerFunctions } from "./functions";
 
 import {
-  modalBg,
   taskName,
   taskDescription,
   taskContainerActive,
@@ -10,8 +9,6 @@ import {
   taskDeadline,
   taskInstances,
 } from "./variables";
-
-import { clearModalInputs } from "./modal";
 
 export class Task {
   name: string;
@@ -40,9 +37,10 @@ export class Task {
   }
 
   print(): string {
-    const returnName = `<h3>${this.name}</h3>`;
+    const returnName = `<h3 class="single-name">${this.name}</h3>`;
     const returnDescription = `<p class="single-description">${this.description}</p>`;
-    const returnDaysRemaining = `<p class="single-days">${this.deadline} days till deadline</p>`;
+    // prettier-ignore
+    const returnDaysRemaining = `<p class="single-days">${this.deadline} ${Math.abs(this.deadline) === 1 ? "day" : "days"} ${this.deadline >= 0 ? "till" : "past"} deadline</p>`;
     const returnCatrgory = `<p class="single-category">${this.category}</p>`;
     return `${returnDaysRemaining}${returnName}${returnCatrgory}${returnDescription}`;
   }
@@ -63,12 +61,6 @@ export const creatingTask = function (): void {
     "afterbegin",
     createdDiv(newTaskID, newTaskPrint)
   );
-
-  clearModalInputs();
-
-  if (modalBg?.classList.contains("active")) {
-    (modalBg as HTMLElement).classList.remove("active");
-  }
 };
 
 taskContainerActive?.addEventListener("click", taskContainerFunctions);
