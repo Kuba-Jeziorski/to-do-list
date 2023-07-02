@@ -44,6 +44,7 @@ h3 {
 
 h1 {
   font-size: 40px;
+  margin: 0 0 50px;
 }
 
 h2 {
@@ -218,6 +219,20 @@ form {
   }
 }
 
+.title {
+  &-active {
+    color: $tertiary;
+  }
+
+  &-finished {
+    color: $secondary;
+  }
+
+  &-all {
+    color: $primary;
+  }
+}
+
 .textarea {
   &-placeholder {
     color: $secondary;
@@ -255,7 +270,7 @@ form {
 .single {
   &-task {
     display: flex;
-    min-height: 81px;
+    min-height: 91.5px;
     flex-direction: column;
     padding: 10px 30px;
     position: relative;
@@ -280,56 +295,30 @@ form {
   &-btn,
   &-state,
   &-edit {
-    @include backgroundSetup;
+    @include backgroundSetup(16px, (2px 1px));
     position: absolute;
     right: 5px;
     width: 20px;
     height: 20px;
+    border: 1px solid $primary;
     border-radius: 6px;
     cursor: pointer;
+    background-color: transparent;
   }
 
   &-btn {
     top: 5px;
-    border: 1px solid red;
-    // background-image: url(/src/img/close-sign.svg);
-    background-color: transparent;
-
-    &::before {
-      content: "D";
-      font-size: 18px;
-      position: absolute;
-      top: -4px;
-      left: 4px;
-    }
+    background-image: url(/src/img/delete.svg);
   }
 
   &-state {
-    top: 30px;
-    border: 1px solid $primary;
-    background-color: transparent;
-
-    &::before {
-      content: "S";
-      font-size: 18px;
-      position: absolute;
-      top: -4px;
-      left: 4px;
-    }
+    top: 35px;
+    background-image: url(/src/img/check.svg);
   }
 
   &-edit {
-    top: 55px;
-    border: 1px solid $primary;
-    background-color: transparent;
-
-    &::before {
-      content: "E";
-      font-size: 18px;
-      position: absolute;
-      top: -4px;
-      left: 4px;
-    }
+    top: 65px;
+    background-image: url(/src/img/edit.svg);
   }
 
   &-category {
@@ -355,9 +344,12 @@ form {
 
 .modal {
   &-open {
-    height: 25px;
-    width: 80px;
-    background-color: red;
+    height: 50px;
+    margin: 50px auto 25px;
+    width: 200px;
+    border-radius: 9px;
+    border: 1px solid $primary;
+    background-color: $tertiary;
     cursor: pointer;
   }
 
@@ -398,7 +390,7 @@ form {
     right: 10px;
     width: 15px;
     aspect-ratio: 1;
-    background-image: url(/src/img/close-sign.svg);
+    background-image: url(/src/img/close.svg);
     cursor: pointer;
   }
 }

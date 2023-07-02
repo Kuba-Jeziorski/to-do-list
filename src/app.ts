@@ -1,4 +1,4 @@
-import { clearModalInputs, taskUpdate } from "./ts/functions";
+import { clearModalInputs, taskUpdate, summaryUpdate } from "./ts/functions";
 import { creatingTask } from "./ts/task";
 import { taskSubmit, modalBg, modalTitle } from "./ts/variables";
 import { consoleModal } from "./ts/modal";
@@ -8,10 +8,10 @@ taskSubmit?.addEventListener("click", function (event) {
 
   if (modalTitle && modalTitle.textContent === "NEW TASK") {
     creatingTask();
+    summaryUpdate();
   } else {
     taskUpdate();
   }
-
   clearModalInputs();
 
   if (modalBg?.classList.contains("active")) {

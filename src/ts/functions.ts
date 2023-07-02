@@ -23,6 +23,7 @@ const containerChange = function (event: any) {
       taskContainerActive?.appendChild(closestSingleTask);
     }
   }
+  summaryUpdate();
 };
 
 const fillingEditInputs = function (event: any) {
@@ -114,7 +115,7 @@ const taskDelete = function (event: any) {
   parent.remove();
 };
 
-const taskToggle = function (event: any) {
+const taskToggleDescription = function (event: any) {
   const target = event.target;
   if (
     !target.classList.contains("single-state") &&
@@ -122,6 +123,31 @@ const taskToggle = function (event: any) {
   ) {
     const closestSingleTask = target.closest(".single-task");
     closestSingleTask.classList.toggle("open");
+  }
+};
+
+export const summaryUpdate = function () {
+  const activeTasksDisplay = document.querySelector("span.act")!;
+  const finishedTasksDisplay = document.querySelector("span.fin")!;
+  const allTasksDisplay = document.querySelector("span.all")!;
+
+  // prettier-ignore
+  const activeTasksAmount = document.querySelectorAll("#container-active .single-task");
+
+  // prettier-ignore
+  const finishedTasksAmount = document.querySelectorAll("#container-finished .single-task");
+
+  if (activeTasksDisplay) {
+    activeTasksDisplay.textContent = activeTasksAmount.length.toString();
+  }
+
+  if (finishedTasksDisplay) {
+    finishedTasksDisplay.textContent = finishedTasksAmount.length.toString();
+  }
+
+  if (allTasksDisplay) {
+    // prettier-ignore
+    allTasksDisplay.textContent = (activeTasksAmount.length + finishedTasksAmount.length).toString();
   }
 };
 
@@ -190,7 +216,7 @@ export const placeholderDisplayChange = function () {
 
 export const taskContainerFunctions = function (event: any) {
   taskDelete(event);
-  taskToggle(event);
+  taskToggleDescription(event);
   stateChange(event);
   containerChange(event);
   openEditModal(event);
@@ -225,8 +251,9 @@ export const taskUpdate = function () {
   // prettier-ignore
   let currentTaskDescription = currentTask?.querySelector(".single-description") as HTMLDivElement;
 
-  // prettier-ignore
-  currentTaskDays.textContent = `${newDeadline.toString()} ${Math.abs(newDeadline) === 1 ? "day" : "days"} ${newDeadline >= 0 ? "till" : "past"} deadline`;
+  currentTaskDays.textContent = `${newDeadline.toString()} ${
+    Math.abs(newDeadline) === 1 ? "day" : "days"
+  } ${newDeadline >= 0 ? "till" : "past"} deadline`;
 
   currentTaskName.textContent = newName;
   currentTaskCategory.textContent = newCategory;
