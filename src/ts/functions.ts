@@ -11,6 +11,7 @@ import {
   taskCategories,
   taskDeadline,
   textareaPlaceholder,
+  taskImportance,
 } from "./variables";
 
 const containerChange = function (event: any) {
@@ -55,6 +56,10 @@ const fillingEditInputs = function (event: any) {
         taskCategories.selectedIndex = +selectedOptionValue;
       }
     }
+  }
+
+  if (taskImportance) {
+    taskImportance.value = (taskInstance as { importance: string }).importance;
   }
 
   if (taskDeadline) {

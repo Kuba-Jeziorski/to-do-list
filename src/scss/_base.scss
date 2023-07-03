@@ -143,6 +143,10 @@ form {
   }
 }
 
+label {
+  color: $secondary;
+}
+
 ::placeholder {
   color: $secondary;
   background: transparent;
@@ -283,6 +287,7 @@ form {
     &.open {
       .single {
         &-description,
+        &-current,
         &-id {
           display: flex;
           // visibility: visible;
@@ -316,6 +321,38 @@ form {
     background-image: url(/src/img/check.svg);
   }
 
+  &-name {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      content: "";
+      top: 15px;
+      left: -15px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    &.high {
+      &::before {
+        background: red;
+      }
+    }
+
+    &.medium {
+      &::before {
+        background: yellow;
+      }
+    }
+
+    &.low {
+      &::before {
+        background: lime;
+      }
+    }
+  }
+
   &-edit {
     top: 65px;
     background-image: url(/src/img/edit.svg);
@@ -325,20 +362,19 @@ form {
     margin: -10px 0 0;
   }
 
-  &-description {
+  &-current {
+    color: $secondary;
+  }
+
+  &-description,
+  &-current {
     font-size: 16px;
+    display: none;
   }
 
   &-days,
   &-category {
     font-size: 14px;
-  }
-
-  &-description {
-    display: none;
-    // visibility: hidden;
-    // opacity: 0;
-    // transition: opacity 0.3s, visibility 0.3s;
   }
 }
 
