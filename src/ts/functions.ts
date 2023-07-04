@@ -1,4 +1,7 @@
 import {
+  deleteModal,
+  deleteModalButtons,
+  importanceRange,
   modalBg,
   modalInputs,
   modalTextarea,
@@ -13,6 +16,16 @@ import {
   textareaPlaceholder,
   taskImportance,
 } from "./variables";
+
+taskImportance.addEventListener("change", function () {
+  if (taskImportance.value === `1`) {
+    importanceRange.textContent = `Low`;
+  } else if (taskImportance.value === `2`) {
+    importanceRange.textContent = `Medium`;
+  } else {
+    importanceRange.textContent = `High`;
+  }
+});
 
 const containerChange = function (event: any) {
   const target = event.target;
@@ -112,12 +125,22 @@ const taskDelete = function (event: any) {
   const btnNode = document.querySelectorAll(".single-btn");
   const btnNodeArr = [...btnNode];
   const clickedElement = btnNodeArr.indexOf(target);
-  console.log(
-    `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}. ${
-      btnNodeArr.length - 1
-    } tasks left.`
-  );
-  parent.remove();
+
+  deleteModal?.classList.add("active");
+
+  deleteModalButtons?.addEventListener("click", function (event: any) {
+    const target = event.target;
+    console.log(`Multiple executions - why?`);
+    if (target.id === "delete-yes") {
+      parent.remove();
+      console.log(
+        `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}. ${
+          btnNodeArr.length - 1
+        } tasks left.`
+      );
+    }
+    deleteModal?.classList.remove("active");
+  });
 };
 
 const taskToggleDescription = function (event: any) {
@@ -235,12 +258,15 @@ export const taskUpdate = function () {
   const newDescription = taskDescription.value;
   const newCategory = taskCategories.options[taskCategories.selectedIndex].text;
   const newDeadline = daysRemaining(taskDeadline);
+  const newImportance = taskImportance.value;
 
   (taskInstances[editedTaskID] as { name: string }).name = newName;
   // prettier-ignore
   (taskInstances[editedTaskID] as { description: string }).description = newDescription;
   (taskInstances[editedTaskID] as { category: string }).category = newCategory;
   (taskInstances[editedTaskID] as { deadline: number }).deadline = newDeadline;
+  // prettier-ignore
+  (taskInstances[editedTaskID] as { importance: string }).importance = newImportance;
 
   console.log(`Task changed to:`);
   console.log(taskInstances[editedTaskID]);
@@ -259,6 +285,21 @@ export const taskUpdate = function () {
   currentTaskDays.textContent = `${newDeadline.toString()} ${
     Math.abs(newDeadline) === 1 ? "day" : "days"
   } ${newDeadline >= 0 ? "till" : "past"} deadline`;
+
+  const nameImportance = document.querySelector(".single-task .single-name");
+  const importanceStates = ["low", "medium", "high"];
+  importanceStates.map((singleImportance) =>
+    nameImportance?.classList.remove(singleImportance)
+  );
+  let importanceNameClass = ``;
+  if (newImportance === `1`) {
+    importanceNameClass = `low`;
+  } else if (newImportance === `2`) {
+    importanceNameClass = `medium`;
+  } else {
+    importanceNameClass = `high`;
+  }
+  nameImportance?.classList.add(importanceNameClass);
 
   currentTaskName.textContent = newName;
   currentTaskCategory.textContent = newCategory;

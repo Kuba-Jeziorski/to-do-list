@@ -1,3 +1,14 @@
+export const deleteModal = document.querySelector(".modal-delete");
+export const deleteModalButtons = document.querySelector(
+  ".modal-delete-buttons"
+);
+export const deleteButtonYes = document.querySelector("#delete-yes");
+export const deleteButtonNo = document.querySelector("#delete-no");
+
+export const importanceRange = document.querySelector(
+  "#importance-range"
+) as HTMLElement;
+
 export const modalBg = document.querySelector(".modal-bg");
 export const modalClose = document.querySelector(".modal-close");
 export const modalInputs = document.querySelectorAll("#form input");
