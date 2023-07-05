@@ -1,25 +1,28 @@
-export const deleteModal = document.querySelector(".modal-delete");
-export const deleteModalButtons = document.querySelector(
-  ".modal-delete-buttons"
-);
-export const deleteButtonYes = document.querySelector("#delete-yes");
-export const deleteButtonNo = document.querySelector("#delete-no");
-
-export const importanceRange = document.querySelector(
-  "#importance-range"
+export const deleteModal = document.querySelector(
+  ".modal-delete"
 ) as HTMLElement;
+// prettier-ignore
+export const deleteModalButtons = document.querySelector(".modal-delete-buttons") as HTMLElement;
+// prettier-ignore
+export const deleteButtonYes = document.querySelector("#delete-yes") as HTMLElement;
+// prettier-ignore
+export const deleteButtonNo = document.querySelector("#delete-no") as HTMLElement;
 
-export const modalBg = document.querySelector(".modal-bg");
-export const modalClose = document.querySelector(".modal-close");
+// prettier-ignore
+export const importanceRange = document.querySelector("#importance-range") as HTMLElement;
+
+export const modalBg = document.querySelector(".modal-bg") as HTMLElement;
+export const modalClose = document.querySelector(".modal-close") as HTMLElement;
 export const modalInputs = document.querySelectorAll("#form input");
-export const modalOpen = document.querySelector(".modal-open");
-export const modalTextarea = document.querySelector("#desc");
-export const modalTitle = document.querySelector("#modal-title");
+export const modalOpen = document.querySelector(".modal-open") as HTMLElement;
+export const modalTextarea = document.querySelector("#desc") as HTMLElement;
+export const modalTitle = document.querySelector("#modal-title") as HTMLElement;
 // prettier-ignore
-export const taskCategories = document.querySelector("#sel") as HTMLSelectElement;
-export const taskContainerActive = document.querySelector("#container-active");
+export const taskCategories = document.querySelector("#task-cat") as HTMLSelectElement;
 // prettier-ignore
-export const taskContainerFinished = document.querySelector("#container-finished");
+export const taskContainerActive = document.querySelector("#container-active") as HTMLElement;
+// prettier-ignore
+export const taskContainerFinished = document.querySelector("#container-finished") as HTMLElement;
 // prettier-ignore
 export const taskDeadline = document.querySelector("#date") as HTMLInputElement;
 // prettier-ignore
@@ -33,3 +36,8 @@ export const taskState = document.querySelector(".single-state") as HTMLElement;
 export const taskSubmit = document.querySelector("#submit") as HTMLElement;
 // prettier-ignore
 export const textareaPlaceholder = document.querySelector(".textarea-placeholder") as HTMLElement;
+
+// prettier-ignore
+export const validateModal = document.querySelector('.modal-validation') as HTMLElement;
+// prettier-ignore
+export const validateBtn = document.querySelector('#validation-button') as HTMLElement;

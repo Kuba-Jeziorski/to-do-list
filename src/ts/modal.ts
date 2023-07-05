@@ -22,5 +22,3 @@ document.addEventListener("keydown", function (event) {
 });
 
 taskDescription.addEventListener("input", placeholderDisplayChange);
-
-modalOpen?.addEventListener("click", function () {});

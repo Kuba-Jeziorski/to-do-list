@@ -20,7 +20,7 @@
       <h2 class="text-centered title-all">
         All tasks: <span class="all">0</span>
       </h2>
-      <div class="modal-open flex-c">ADD NEW</div>
+      <div class="modal-open margin-modal flex-c">ADD NEW</div>
       <div class="container-task-active container-full flex-col">
         <h2 class="text-centered">Active tasks</h2>
         <div class="container-inside" id="container-active"></div>
@@ -36,10 +36,10 @@
           <div class="modal-close position-absolute"></div>
           <h2 class="text-centered" id="modal-title"></h2>
           <form id="form" autocomplete="off">
-            <input type="text" placeholder="Task name..." id="name" required />
+            <input type="text" placeholder="Task name*" id="name" required />
             <div class="textarea-wrapper">
               <textarea type="text" id="desc"></textarea>
-              <div class="textarea-placeholder">Task description...</div>
+              <div class="textarea-placeholder">Task description*</div>
             </div>
             <div class="flex-col">
               <label for="importance">Task importance</label>
@@ -47,9 +47,9 @@
               <input type="range" min="1" max="3" placeholder="Importance" id="importance"/>
               <p class="text-centered" id="importance-range">Medium</p>
             </div>
-            <input type="date" placeholder="Deadline date..." id="date" />
-            <select name="abc" id="sel" required>
-              <option value="0" disabled selected>Select task category:</option>
+            <input type="date" placeholder="Deadline date" id="date" />
+            <select name="task-category" id="task-cat" required>
+              <option value="0" disabled selected>Select task category*:</option>
               <option value="1">Personal</option>
               <option value="2">Work</option>
               <option value="3">Education</option>
@@ -70,6 +70,14 @@
             <div class="modal-delete-button" id="delete-yes">YES</div>
             <div class="modal-delete-button" id="delete-no">NO</div>
           </div>
+        </div>
+      </div>
+      <div class="modal-validation">
+        <div class="modal-validation-content flex-c flex-col">
+          <h2 class="text-centered">
+            Task name, description and category are required!
+          </h2>
+          <div class="modal-validation-button" id="validation-button">OK</div>
         </div>
       </div>
     </div>

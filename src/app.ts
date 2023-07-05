@@ -1,21 +1,40 @@
-import { clearModalInputs, taskUpdate, summaryUpdate } from "./ts/functions";
+import {
+  clearModalInputs,
+  taskUpdate,
+  summaryUpdate,
+  inputValidation,
+} from "./ts/functions";
 import { creatingTask } from "./ts/task";
-import { taskSubmit, modalBg, modalTitle } from "./ts/variables";
+import { taskSubmit, modalBg, modalTitle, validateModal } from "./ts/variables";
 import { consoleModal } from "./ts/modal";
 
 taskSubmit?.addEventListener("click", function (event) {
   event.preventDefault();
 
   if (modalTitle && modalTitle.textContent === "NEW TASK") {
-    creatingTask();
-    summaryUpdate();
-  } else {
-    taskUpdate();
-  }
-  clearModalInputs();
+    if (inputValidation()) {
+      creatingTask();
+      summaryUpdate();
 
-  if (modalBg?.classList.contains("active")) {
-    (modalBg as HTMLElement).classList.remove("active");
+      clearModalInputs();
+
+      if (modalBg?.classList.contains("active")) {
+        (modalBg as HTMLElement).classList.remove("active");
+      }
+    } else {
+      validateModal.classList.add("active");
+    }
+  } else {
+    if (inputValidation()) {
+      taskUpdate();
+      clearModalInputs();
+
+      if (modalBg?.classList.contains("active")) {
+        modalBg.classList.remove("active");
+      }
+    } else {
+      validateModal.classList.add("active");
+    }
   }
 });
 

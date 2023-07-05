@@ -291,6 +291,10 @@ input {
   &-default {
     margin: 50px 0 0;
   }
+
+  &-modal {
+    margin: 50px auto;
+  }
 }
 
 .position {
@@ -418,7 +422,6 @@ input {
 .modal {
   &-open {
     height: 50px;
-    margin: 50px auto 25px;
     width: 200px;
     border-radius: 9px;
     border: 1px solid $primary;
@@ -445,7 +448,7 @@ input {
   }
 
   &-content {
-    @include centered;
+    @include centeredShifted;
     background: $tertiary;
     display: none;
     position: absolute;
@@ -493,16 +496,35 @@ input {
     }
 
     &-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 40px;
-      width: 60px;
+      @include modalButtonSetup;
+
+      &:hover {
+        background-color: $quatenary;
+      }
+    }
+  }
+
+  &-validation {
+    @include fullSize;
+    @include modalSetup;
+
+    &.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    &-content {
+      @include centered;
+      background: $tertiary;
+      position: absolute;
+      width: 550px;
+      padding: 40px;
+      gap: 20px;
       border-radius: 10px;
-      border: 1px solid $secondary;
-      cursor: pointer;
-      background-color: transparent;
-      transition: background-color 0.3s;
+    }
+
+    &-button {
+      @include modalButtonSetup;
 
       &:hover {
         background-color: $quatenary;

@@ -15,6 +15,8 @@ import {
   taskDeadline,
   textareaPlaceholder,
   taskImportance,
+  validateBtn,
+  validateModal,
 } from "./variables";
 
 taskImportance.addEventListener("change", function () {
@@ -25,6 +27,10 @@ taskImportance.addEventListener("change", function () {
   } else {
     importanceRange.textContent = `High`;
   }
+});
+
+validateBtn.addEventListener("click", function () {
+  validateModal.classList.remove("active");
 });
 
 const containerChange = function (event: any) {
@@ -106,11 +112,21 @@ const openEditModal = function (event: any): number {
 
 const stateChange = function (event: any) {
   const target = event.target;
+
   if (target.classList.contains("single-state")) {
     const closestTaskState = target.closest(".single-state");
     const closestSingleTask = target.closest(".single-task");
     closestTaskState.classList.toggle("finished");
     closestSingleTask.classList.toggle("finished");
+
+    const taskInstance = taskInstances[taskAttributeID(target)];
+    if ((taskInstance as { state: string }).state === `active`) {
+      console.log(`active -> finished`);
+      (taskInstance as { state: string }).state = `finished`;
+    } else {
+      console.log(`finished -> active`);
+      (taskInstance as { state: string }).state = `active`;
+    }
   }
 };
 
@@ -208,6 +224,31 @@ export const clearModalInputs = function () {
   taskCategories.selectedIndex = 0;
 };
 
+export const inputValidation = function () {
+  const validationArray: number[] = [];
+
+  if (taskName.value === ``) {
+    validationArray.push(0);
+  } else {
+    validationArray.push(1);
+  }
+
+  if (taskDescription.value === ``) {
+    validationArray.push(0);
+  } else {
+    validationArray.push(1);
+  }
+
+  // prettier-ignore
+  if (taskCategories.options[taskCategories.selectedIndex].text === `Select task category*:`) {
+    validationArray.push(0);
+  } else {
+    validationArray.push(1);
+  }
+
+  return !validationArray.includes(0);
+};
+
 export const daysRemaining = function (date: any) {
   const futureDateString = date.value;
 
@@ -282,9 +323,11 @@ export const taskUpdate = function () {
   // prettier-ignore
   let currentTaskDescription = currentTask?.querySelector(".single-description") as HTMLDivElement;
 
-  currentTaskDays.textContent = `${newDeadline.toString()} ${
-    Math.abs(newDeadline) === 1 ? "day" : "days"
-  } ${newDeadline >= 0 ? "till" : "past"} deadline`;
+  if (!isNaN(newDeadline)) {
+    currentTaskDays.textContent = `${newDeadline.toString()} ${
+      Math.abs(newDeadline) === 1 ? "day" : "days"
+    } ${newDeadline >= 0 ? "till" : "past"} deadline`;
+  }
 
   const nameImportance = document.querySelector(".single-task .single-name");
   const importanceStates = ["low", "medium", "high"];

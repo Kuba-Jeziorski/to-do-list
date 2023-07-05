@@ -20,6 +20,7 @@ export class Task {
   public id: number;
   currentDate: string;
   importance: string;
+  state: string;
 
   constructor(
     name: string,
@@ -35,6 +36,7 @@ export class Task {
     this.id = Task.idCounter;
     this.currentDate = this.checkingCurrentDate();
     this.importance = importance;
+    this.state = `active`;
     Task.idCounter++;
   }
 
@@ -70,10 +72,10 @@ export class Task {
       importanceNameClass = `high`;
     }
     const returnName = `<h3 class="single-name ${importanceNameClass}">${this.name}</h3>`;
-    const returnCatrgory = `<p class="single-category">${this.category}</p>`;
+    const returnCategory = `<p class="single-category">${this.category}</p>`;
     const returnDescription = `<p class="single-description">${this.description}</p>`;
     const returnCurrentDate = `<p class="single-current">Task created on ${this.currentDate}</p>`;
-    return `${returnDaysRemaining}${returnName}${returnCatrgory}${returnDescription}${returnCurrentDate}`;
+    return `${returnDaysRemaining}${returnName}${returnCategory}${returnDescription}${returnCurrentDate}`;
   }
 }
 
