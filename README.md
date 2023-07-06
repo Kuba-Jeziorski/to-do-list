@@ -20,6 +20,8 @@ Extra features (future):
 
 1. Task state change with drag: particular task can be moved with drag between states.
 2. Database: tasks are stored in database (done with Firebase).
+3. Add PVA/TVA.
+4. Add push notification (for example when deadline is soon).
 
 To open this project:
 
