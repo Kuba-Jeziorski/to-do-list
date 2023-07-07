@@ -21,12 +21,14 @@
         All tasks: <span class="all">0</span>
       </h2>
       <div class="modal-open margin-modal flex-c">ADD NEW</div>
-      <div class="container-task-active container-full flex-col">
+      <div class="container-task-active container-full flex-col flex-jcc">
+        <div class="btn-filter" id="btn-filter-active"></div>
         <h2 class="text-centered">Active tasks</h2>
         <div class="container-inside" id="container-active"></div>
       </div>
       <!-- prettier-ignore -->
-      <div class="container-task-finished container-full margin-default flex-col">
+      <div class="container-task-finished container-full margin-default">
+        <div class="btn-filter" id="btn-filter-finished"></div>
         <h2 class="text-centered">Finished tasks</h2>
         <div class="container-inside" id="container-finished"></div>
       </div>
@@ -78,6 +80,28 @@
             Task name, description and category are required!
           </h2>
           <div class="modal-validation-button" id="validation-button">OK</div>
+        </div>
+      </div>
+      <div class="modal-filter">
+        <div class="modal-filter-content">
+          <div class="modal-filter-close"></div>
+          <div class="modal-filter-content-inner">
+            <div class="modal-filter-tabs flex-w">
+              <input type="radio" name="filters" id="modal-tab1" aria-controls="tab-filter" checked>
+              <label for="modal-tab1">Filter tab</label>
+              <input type="radio" name="filters" id="modal-tab2" aria-controls="tab-sort">
+              <label for="modal-tab2">Sort tab</label>
+              <div class="modal-filter-panels">
+                <div id="tab-filter">
+                  filter tab content
+                </div>
+                <div id="tab-sort">
+                  sort tab content
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

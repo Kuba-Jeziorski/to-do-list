@@ -9,6 +9,15 @@ export const deleteButtonYes = document.querySelector("#delete-yes") as HTMLElem
 export const deleteButtonNo = document.querySelector("#delete-no") as HTMLElement;
 
 // prettier-ignore
+export const filterActiveBtn = document.querySelector('#btn-filter-active') as HTMLElement;
+// prettier-ignore
+export const filterClose = document.querySelector('.modal-filter-close') as HTMLElement;
+// prettier-ignore
+export const filterModal = document.querySelector(".modal-filter") as HTMLElement;
+// prettier-ignore
+export const filterFinishedBtn = document.querySelector('#btn-filter-finished') as HTMLElement;
+
+// prettier-ignore
 export const importanceRange = document.querySelector("#importance-range") as HTMLElement;
 
 export const modalBg = document.querySelector(".modal-bg") as HTMLElement;

@@ -184,13 +184,6 @@ input {
   background: transparent;
 }
 
-#btn-check {
-  width: 50px;
-  height: 20px;
-  border: 1px solid yellow;
-  cursor: pointer;
-}
-
 #container {
   &-active,
   &-finished {
@@ -232,6 +225,7 @@ input {
   &-task {
     &-active,
     &-finished {
+      position: relative;
       border: 1px solid $primary;
       min-height: 55px;
       background: $secondary;
@@ -529,6 +523,143 @@ input {
       &:hover {
         background-color: $quatenary;
       }
+    }
+  }
+
+  &-filter {
+    @include fullSize;
+    @include modalSetup;
+
+    &.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    &-content {
+      @include centered;
+      background: $secondary;
+      position: absolute;
+      width: 550px;
+      padding: 40px;
+      border-radius: 10px;
+
+      &-inner {
+        @include fullSize;
+        border-radius: 10px;
+        background: $secondary;
+      }
+    }
+
+    &-close {
+      @include backgroundSetup;
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 15px;
+      right: 15px;
+      cursor: pointer;
+      background-image: url(/src/img/close.svg);
+    }
+
+    &-tabs {
+      & > label {
+        cursor: pointer;
+        color: $primary;
+        background: $secondary;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+      }
+
+      & > #modal-tab1 {
+        &:checked {
+          & ~ .modal-filter-panels {
+            border-radius: 0 8px 8px 8px;
+            & > #tab-filter {
+              display: flex;
+            }
+          }
+        }
+      }
+
+      & > #modal-tab2 {
+        &:checked {
+          & ~ .modal-filter-panels {
+            border-radius: 8px 0 8px 8px;
+            & > #tab-sort {
+              display: flex;
+            }
+          }
+        }
+      }
+
+      & > input {
+        display: none;
+
+        & + label {
+          background: $secondary;
+
+          &[for="modal-tab1"] {
+            border-radius: 8px 0 0 0;
+          }
+
+          &[for="modal-tab2"] {
+            border-radius: 0 8px 0 0;
+          }
+        }
+
+        &:checked {
+          & + label {
+            color: $primary;
+            background: $quatenary;
+
+            &[for="modal-tab1"] {
+              border-radius: 8px 8px 0 0;
+            }
+
+            &[for="modal-tab2"] {
+              border-radius: 8px 8px 0 0;
+            }
+          }
+        }
+      }
+    }
+
+    &-panels {
+      background: $quatenary;
+      width: 100%;
+      height: 401px;
+      display: flex;
+
+      #tab {
+        &-filter,
+        &-sort {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.btn {
+  &-filter {
+    @include backgroundSetup(14px, 2px);
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 15px;
+    top: 15px;
+    background-image: url(/src/img/filter-sort.svg);
+
+    border: 1px solid $primary;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: $tertiary;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: $quatenary;
     }
   }
 }

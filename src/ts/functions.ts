@@ -1,6 +1,10 @@
 import {
   deleteModal,
   deleteModalButtons,
+  filterActiveBtn,
+  filterClose,
+  filterModal,
+  filterFinishedBtn,
   importanceRange,
   modalBg,
   modalInputs,
@@ -348,3 +352,39 @@ export const taskUpdate = function () {
   currentTaskCategory.textContent = newCategory;
   currentTaskDescription.textContent = newDescription;
 };
+
+filterActiveBtn.addEventListener("click", function () {
+  filterModal.classList.add("active");
+  const filteredArray: any[] = [];
+
+  taskInstances.forEach((singleInstance) => {
+    if ((singleInstance as { state: string }).state === `active`) {
+      filteredArray.push(singleInstance);
+    }
+  });
+  console.log(`Amount of all items: ${taskInstances.length}`);
+  console.log(`Amount of filtered items: ${filteredArray.length}`);
+
+  console.log(filteredArray);
+});
+
+filterFinishedBtn.addEventListener("click", function () {
+  filterModal.classList.add("active");
+  const filteredArray: any[] = [];
+
+  taskInstances.forEach((singleInstance) => {
+    if ((singleInstance as { state: string }).state === `finished`) {
+      filteredArray.push(singleInstance);
+    }
+  });
+
+  console.log(`Amount of all items: ${taskInstances.length}`);
+  console.log(`Amount of filtered items: ${filteredArray.length}`);
+
+  console.log(filteredArray);
+});
+
+filterClose?.addEventListener("click", function () {
+  console.log(`close clicked`);
+  filterModal.classList.remove("active");
+});
