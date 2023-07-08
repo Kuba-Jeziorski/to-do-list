@@ -1,6 +1,5 @@
-export const deleteModal = document.querySelector(
-  ".modal-delete"
-) as HTMLElement;
+// prettier-ignore
+export const deleteModal = document.querySelector(".modal-delete") as HTMLElement;
 // prettier-ignore
 export const deleteModalButtons = document.querySelector(".modal-delete-buttons") as HTMLElement;
 // prettier-ignore
@@ -16,6 +15,17 @@ export const filterClose = document.querySelector('.modal-filter-close') as HTML
 export const filterModal = document.querySelector(".modal-filter") as HTMLElement;
 // prettier-ignore
 export const filterFinishedBtn = document.querySelector('#btn-filter-finished') as HTMLElement;
+// prettier-ignore
+export const filterDefault = document.querySelector('#filter-default') as HTMLElement;
+// prettier-ignore
+export const filterSubmit = document.querySelector('#filter-submit') as HTMLElement;
+// prettier-ignore
+export const filterTabCheckboxes = document.querySelectorAll('#tab-filter input[type="checkbox"]');
+
+// prettier-ignore
+export const filterTab1 = document.querySelector('#modal-tab1') as HTMLInputElement;
+// prettier-ignore
+export const filterTab2 = document.querySelector('#modal-tab2') as HTMLInputElement;
 
 // prettier-ignore
 export const importanceRange = document.querySelector("#importance-range") as HTMLElement;

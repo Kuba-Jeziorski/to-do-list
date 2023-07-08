@@ -86,19 +86,221 @@
         <div class="modal-filter-content">
           <div class="modal-filter-close"></div>
           <div class="modal-filter-content-inner">
-            <div class="modal-filter-tabs flex-w">
-              <input type="radio" name="filters" id="modal-tab1" aria-controls="tab-filter" checked>
+            <div class="modal-filter-tabs flex-w position-relative">
+              <input
+                type="radio"
+                name="filters"
+                id="modal-tab1"
+                aria-controls="tab-filter"
+                checked
+              />
               <label for="modal-tab1">Filter tab</label>
-              <input type="radio" name="filters" id="modal-tab2" aria-controls="tab-sort">
+              <input
+                type="radio"
+                name="filters"
+                id="modal-tab2"
+                aria-controls="tab-sort"
+              />
               <label for="modal-tab2">Sort tab</label>
               <div class="modal-filter-panels">
-                <div id="tab-filter">
-                  filter tab content
+                <div id="tab-filter" class="flex-col flex-sb">
+                  <div class="modal-filter-type flex-w">
+                    <h3 class="container-full">Importance</h3>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-importance1"
+                        name="importance-1"
+                      />
+                      <label for="importance-1">Low importance</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-importance2"
+                        name="importance-2"
+                      />
+                      <label for="importance-2">Medium importance</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-importance3"
+                        name="importance-3"
+                      />
+                      <label for="importance-3">High importance</label>
+                    </div>
+                  </div>
+                  <div class="modal-filter-type flex-w">
+                    <h3 class="container-full">Categories</h3>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-category1"
+                        name="category-Personal"
+                      />
+                      <label for="category-Personal">Personal</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-category2"
+                        name="category-Work"
+                      />
+                      <label for="category-Work">Work</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-category3"
+                        name="category-Education"
+                      />
+                      <label for="category-Education">Education</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-category4"
+                        name="category-Social"
+                      />
+                      <label for="category-Social">Social</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-category5"
+                        name="category-Travel"
+                      />
+                      <label for="category-Travel">Travel</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-category6"
+                        name="category-Hobbies"
+                      />
+                      <label for="category-Hobbies">Hobbies</label>
+                    </div>
+                  </div>
+                  <div class="modal-filter-type flex-w">
+                    <h3 class="container-full">Till deadline</h3>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-deadline1"
+                        name="deadline-0"
+                      />
+                      <label for="deadline-0">Today</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-deadline2"
+                        name="deadline-7"
+                      />
+                      <label for="deadline-7">Less then week</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-deadline3"
+                        name="deadline-30"
+                      />
+                      <label for="deadline-30">Less then month</label>
+                    </div>
+                    <div class="modal-filter-type-single">
+                      <input
+                        type="checkbox"
+                        id="filter-deadline4"
+                        name="deadline-365"
+                      />
+                      <label for="deadline-365">Less then year</label>
+                    </div>
+                  </div>
                 </div>
-                <div id="tab-sort">
-                  sort tab content
+                <div id="tab-sort" class="flex-col flex-sb">
+                  <div class="modal-filter-type flex-w flex-col">
+                    <h3 class="container-full">Importance</h3>
+                    <div class="container-full flex-w">
+                      <div class="modal-filter-type-single">
+                        <input
+                          type="radio"
+                          name="sorting"
+                          category="importance-1"
+                        />
+                        <label>Ascending</label>
+                      </div>
+                      <div class="modal-filter-type-single">
+                        <input
+                          type="radio"
+                          name="sorting"
+                          category="importance-2"
+                        />
+                        <label>Descending</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-filter-type flex-w flex-col">
+                    <h3 class="container-full">Deadline</h3>
+                    <div class="container-full flex-w">
+                      <div class="modal-filter-type-single">
+                        <input
+                          type="radio"
+                          name="sorting"
+                          category="deadline-1"
+                        />
+                        <label>Least urgent</label>
+                      </div>
+                      <div class="modal-filter-type-single">
+                        <input
+                          type="radio"
+                          name="sorting"
+                          category="deadline-2"
+                        />
+                        <label>Most urgent</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-filter-type flex-w flex-col">
+                    <h3 class="container-full">Creation date</h3>
+                    <div class="container-full flex-w">
+                      <div class="modal-filter-type-single">
+                        <input type="radio" name="sorting" category="id-1" />
+                        <label>Oldest</label>
+                      </div>
+                      <div class="modal-filter-type-single">
+                        <input
+                          type="radio"
+                          name="sorting"
+                          category="id-2"
+                          checked
+                        />
+                        <label>Newest</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-filter-type flex-w flex-col">
+                    <h3 class="container-full">Name</h3>
+                    <div class="container-full flex-w">
+                      <div class="modal-filter-type-single">
+                        <input type="radio" name="sorting" category="id-1" />
+                        <label>A to Z</label>
+                      </div>
+                      <div class="modal-filter-type-single">
+                        <input type="radio" name="sorting" category="id-2" />
+                        <label>Z to A</label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div class="modal-filter-submit flex-sb">
+                <div class="modal-filter-submit-btn flex-c" id="filter-submit">
+                  SUBMIT
+                </div>
+                <div class="modal-filter-submit-btn flex-c" id="filter-default">
+                  DEFAULT
+                </div>
               </div>
             </div>
           </div>

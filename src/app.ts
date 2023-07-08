@@ -6,7 +6,6 @@ import {
 } from "./ts/functions";
 import { creatingTask } from "./ts/task";
 import { taskSubmit, modalBg, modalTitle, validateModal } from "./ts/variables";
-import { consoleModal } from "./ts/modal";
 
 taskSubmit?.addEventListener("click", function (event) {
   event.preventDefault();
@@ -37,5 +36,3 @@ taskSubmit?.addEventListener("click", function (event) {
     }
   }
 });
-
-console.log(consoleModal);
