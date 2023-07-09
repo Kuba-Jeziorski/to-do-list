@@ -524,15 +524,9 @@ filterSubmit.addEventListener("click", function () {
     sortedArray.map((singleTask: Task, singleIndex) => {
       //prettier-ignore
       const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.id}"]`)!;
+
       //prettier-ignore
-      const defaultRadio = document.querySelector(`input[type='radio'][category='id-2']`)! as HTMLInputElement;
-      console.log(defaultRadio.checked === true);
-      if (defaultRadio.checked === true) {
-        (singleTaskDOM as HTMLElement).style.order = `unset`;
-      } else {
-        //prettier-ignore
-        (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
-      }
+      (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
     });
   }
 
