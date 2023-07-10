@@ -1,4 +1,9 @@
-import { createdDiv, daysRemaining, taskContainerFunctions } from "./functions";
+import {
+  createdDiv,
+  daysRemaining,
+  taskContainerFunctions,
+  currentDayCheck,
+} from "./functions";
 
 import {
   taskName,
@@ -67,20 +72,10 @@ export class Task {
     this.deadline = deadline;
     this.category = category;
     this.id = Task.idCounter;
-    this.currentDate = this.checkingCurrentDate();
+    this.currentDate = currentDayCheck();
     this.importance = importance;
     this.state = `active`;
     Task.idCounter++;
-  }
-
-  checkingCurrentDate(): string {
-    const currentDate = new Date();
-    const currentDay = String(currentDate.getDate()).padStart(2, "0");
-    const currentMonth = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const currentYear = String(currentDate.getFullYear());
-
-    const formattedDate = `${currentDay}.${currentMonth}.${currentYear}`;
-    return formattedDate;
   }
 
   idAttribute(): number {
@@ -123,39 +118,26 @@ export const creatingTask = function (): void {
   taskInstances.push(newTask);
   const newTaskPrint = newTask.print();
   const newTaskID = newTask.idAttribute();
+  console.log(newTaskID);
 
   taskContainerActive?.insertAdjacentHTML(
     "afterbegin",
     createdDiv(newTaskID, newTaskPrint)
   );
 
-  const currentDay = function (): string {
-    const currentDate = new Date();
-    const currentDay = String(currentDate.getDate()).padStart(2, "0");
-    const currentMonth = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const currentYear = String(currentDate.getFullYear());
-
-    const formattedDate = `${currentDay}.${currentMonth}.${currentYear}`;
-    return formattedDate;
-  };
-
   // firebase
   addDoc(colRef, {
-    // title: "a",
-    // description: "b",
     category: taskCategories.options[taskCategories.selectedIndex].text,
-    currentDate: currentDay(),
+    currentDate: currentDayCheck(),
     deadline: daysRemaining(taskDeadline),
     description: description,
-    id: Math.random(),
+    id: newTask.idAttribute(),
     importance: taskImportance.value,
     name: name,
     state: "active",
   }).then(() => {
     console.log(`submited`);
   });
-  console.log(name);
-  console.log(description);
   // firebase
 };
 
