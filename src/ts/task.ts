@@ -16,7 +16,12 @@ import {
   taskImportance,
 } from "./variables";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  addDoc,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDjIYSECgWl3N4T_B6YTgV_HrRhx-vQaQs",
@@ -36,18 +41,14 @@ const db = getFirestore();
 // collection ref
 const colRef = collection(db, "tasks");
 
-// get collection data
-getDocs(colRef)
-  .then((snapshot) => {
-    let tasks: any[] = [];
-    snapshot.docs.forEach((doc) => {
-      tasks.push({ ...doc.data(), id: doc.id });
-    });
-    console.log(tasks);
-  })
-  .catch((err) => {
-    console.log(err.message);
+// dynamically changes while there is a change (no need to refresh page)
+onSnapshot(colRef, (snapshot) => {
+  let tasks: any[] = [];
+  snapshot.docs.forEach((doc) => {
+    tasks.push({ ...doc.data(), id: doc.id });
   });
+  console.log(tasks);
+});
 
 export class Task {
   name: string;
@@ -131,6 +132,7 @@ export const creatingTask = function (): void {
     currentDate: currentDayCheck(),
     deadline: daysRemaining(taskDeadline),
     description: description,
+    // IMPORTANT problem here
     id: newTask.idAttribute(),
     importance: taskImportance.value,
     name: name,
