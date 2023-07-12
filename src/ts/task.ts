@@ -12,7 +12,7 @@ import {
   taskContainerFinished,
   taskCategories,
   taskDeadline,
-  taskInstances,
+  // taskInstances,
   taskImportance,
 } from "./variables";
 import { initializeApp } from "firebase/app";
@@ -22,6 +22,58 @@ import {
   onSnapshot,
   addDoc,
 } from "firebase/firestore";
+
+export let taskInstances: object[] = [];
+
+const creatingTaskFromBase = function (object: any): void {
+  const name = object.name;
+  const description = object.description;
+  const category = object.category;
+  const deadline = object.deadline;
+  const importance = object.importance;
+  const id = object.id;
+  const currentDate = object.currentDate;
+
+  const newTaskID = id;
+  //prettier-ignore
+  const printBase: string = printFromBase(name, description, category, deadline, importance, currentDate);
+
+  taskContainerActive?.insertAdjacentHTML(
+    "afterbegin",
+    createdDiv(newTaskID, printBase)
+  );
+};
+
+const printFromBase = function (
+  name: string,
+  description: string,
+  category: string,
+  deadline: number,
+  importance: string,
+  currentDate: string
+): string {
+  let returnDaysRemaining = "";
+  if (!isNaN(deadline)) {
+    returnDaysRemaining = `<p class="single-days">${deadline} ${
+      Math.abs(deadline) === 1 ? "day" : "days"
+    } ${deadline >= 0 ? "till" : "past"} deadline</p>`;
+  } else {
+    returnDaysRemaining = `<p class="single-days">Deadline is not set</p>`;
+  }
+  let importanceNameClass = ``;
+  if (importance === `1`) {
+    importanceNameClass = `low`;
+  } else if (importance === `2`) {
+    importanceNameClass = `medium`;
+  } else {
+    importanceNameClass = `high`;
+  }
+  const returnName = `<h3 class="single-name ${importanceNameClass}">${name}</h3>`;
+  const returnCategory = `<p class="single-category">${category}</p>`;
+  const returnDescription = `<p class="single-description">${description}</p>`;
+  const returnCurrentDate = `<p class="single-current">Task created on ${currentDate}</p>`;
+  return `${returnDaysRemaining}${returnName}${returnCategory}${returnDescription}${returnCurrentDate}`;
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyDjIYSECgWl3N4T_B6YTgV_HrRhx-vQaQs",
@@ -42,20 +94,30 @@ const db = getFirestore();
 const colRef = collection(db, "tasks");
 
 // dynamically changes while there is a change (no need to refresh page)
+let tasksArray: any[] = [];
 onSnapshot(colRef, (snapshot) => {
-  let tasks: any[] = [];
+  tasksArray = [];
+  taskInstances = [];
   snapshot.docs.forEach((doc) => {
-    tasks.push({ ...doc.data(), id: doc.id });
+    tasksArray.push({ ...doc.data() });
   });
-  console.log(tasks);
+  console.log(tasksArray);
+  console.log(tasksArray.length);
+  taskInstances = [...tasksArray];
+  // IMPORTANT for every single item, all of the tasksArray items are created again
+  tasksArray.map((singleTask) => {
+    creatingTaskFromBase(singleTask);
+  });
+  console.log(`line: 111, in onSnapshot`);
+  return tasksArray;
 });
+console.log(`line: 114, after onSnapshot`);
 
 export class Task {
   name: string;
   description: string;
   deadline: number;
   category: string;
-  private static idCounter: number = 0;
   public id: number;
   currentDate: string;
   importance: string;
@@ -72,11 +134,11 @@ export class Task {
     this.description = description;
     this.deadline = deadline;
     this.category = category;
-    this.id = Task.idCounter;
+    // this.id = idNumber;
+    this.id = tasksArray.length;
     this.currentDate = currentDayCheck();
     this.importance = importance;
     this.state = `active`;
-    Task.idCounter++;
   }
 
   idAttribute(): number {
@@ -119,12 +181,13 @@ export const creatingTask = function (): void {
   taskInstances.push(newTask);
   const newTaskPrint = newTask.print();
   const newTaskID = newTask.idAttribute();
-  console.log(newTaskID);
 
   taskContainerActive?.insertAdjacentHTML(
     "afterbegin",
     createdDiv(newTaskID, newTaskPrint)
   );
+
+  // console.log(`id: ${idNumber}`);
 
   // firebase
   addDoc(colRef, {
@@ -132,7 +195,6 @@ export const creatingTask = function (): void {
     currentDate: currentDayCheck(),
     deadline: daysRemaining(taskDeadline),
     description: description,
-    // IMPORTANT problem here
     id: newTask.idAttribute(),
     importance: taskImportance.value,
     name: name,

@@ -15,7 +15,7 @@ import {
   taskContainerActive,
   taskContainerFinished,
   taskDescription,
-  taskInstances,
+  // taskInstances,
   taskName,
   taskCategories,
   taskDeadline,
@@ -30,7 +30,7 @@ import {
   filterTab2,
 } from "./variables";
 
-import { Task } from "./task";
+import { Task, taskInstances } from "./task";
 
 taskImportance.addEventListener("change", function () {
   if (taskImportance.value === `1`) {
