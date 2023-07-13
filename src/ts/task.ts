@@ -3,6 +3,7 @@ import {
   daysRemaining,
   taskContainerFunctions,
   currentDayCheck,
+  summaryUpdate,
 } from "./functions";
 
 import {
@@ -12,7 +13,6 @@ import {
   taskContainerFinished,
   taskCategories,
   taskDeadline,
-  // taskInstances,
   taskImportance,
 } from "./variables";
 import { initializeApp } from "firebase/app";
@@ -20,28 +20,37 @@ import {
   getFirestore,
   collection,
   onSnapshot,
+  // getDocs,
+  // doc,
   addDoc,
 } from "firebase/firestore";
 
 export let taskInstances: object[] = [];
 
-const creatingTaskFromBase = function (object: any): void {
-  const name = object.name;
-  const description = object.description;
-  const category = object.category;
-  const deadline = object.deadline;
-  const importance = object.importance;
-  const id = object.id;
-  const currentDate = object.currentDate;
+const creatingTaskFromBase = function (array: any): void {
+  const allSingleTasks = document.querySelectorAll(".single-task");
+  allSingleTasks.forEach((singleTask) => singleTask.remove());
 
-  const newTaskID = id;
-  //prettier-ignore
-  const printBase: string = printFromBase(name, description, category, deadline, importance, currentDate);
+  array.map((singleElement: any) => {
+    const name = singleElement.name;
+    const description = singleElement.description;
+    const category = singleElement.category;
+    const deadline = singleElement.deadline;
+    const importance = singleElement.importance;
+    const id = singleElement.id;
+    const currentDate = singleElement.currentDate;
 
-  taskContainerActive?.insertAdjacentHTML(
-    "afterbegin",
-    createdDiv(newTaskID, printBase)
-  );
+    const newTaskID = id;
+    //prettier-ignore
+    const printBase: string = printFromBase(name, description, category, deadline, importance, currentDate);
+
+    taskContainerActive?.insertAdjacentHTML(
+      "afterbegin",
+      createdDiv(newTaskID, printBase)
+    );
+  });
+
+  summaryUpdate();
 };
 
 const printFromBase = function (
@@ -88,30 +97,27 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 
 // init services
-const db = getFirestore();
+export const db = getFirestore();
 
 // collection ref
 const colRef = collection(db, "tasks");
 
 // dynamically changes while there is a change (no need to refresh page)
 let tasksArray: any[] = [];
+
 onSnapshot(colRef, (snapshot) => {
   tasksArray = [];
   taskInstances = [];
   snapshot.docs.forEach((doc) => {
-    tasksArray.push({ ...doc.data() });
+    tasksArray.push({ ...doc.data(), databaseId: doc.id });
   });
-  console.log(tasksArray);
-  console.log(tasksArray.length);
   taskInstances = [...tasksArray];
-  // IMPORTANT for every single item, all of the tasksArray items are created again
-  tasksArray.map((singleTask) => {
-    creatingTaskFromBase(singleTask);
-  });
-  console.log(`line: 111, in onSnapshot`);
+  console.log(`taskInstances:`);
+  console.log(taskInstances);
+
+  creatingTaskFromBase(tasksArray);
   return tasksArray;
 });
-console.log(`line: 114, after onSnapshot`);
 
 export class Task {
   name: string;
@@ -134,7 +140,6 @@ export class Task {
     this.description = description;
     this.deadline = deadline;
     this.category = category;
-    // this.id = idNumber;
     this.id = tasksArray.length;
     this.currentDate = currentDayCheck();
     this.importance = importance;
@@ -183,7 +188,7 @@ export const creatingTask = function (): void {
   const newTaskID = newTask.idAttribute();
 
   taskContainerActive?.insertAdjacentHTML(
-    "afterbegin",
+    "beforebegin",
     createdDiv(newTaskID, newTaskPrint)
   );
 
@@ -205,5 +210,11 @@ export const creatingTask = function (): void {
   // firebase
 };
 
-taskContainerActive?.addEventListener("click", taskContainerFunctions);
-taskContainerFinished?.addEventListener("click", taskContainerFunctions);
+window.addEventListener("load", function () {
+  taskContainerActive.addEventListener("click", taskContainerFunctions);
+  taskContainerFinished.addEventListener("click", taskContainerFunctions);
+});
+
+taskContainerActive.addEventListener("click", function () {
+  console.log(`test`);
+});

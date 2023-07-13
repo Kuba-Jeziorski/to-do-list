@@ -30,7 +30,9 @@ import {
   filterTab2,
 } from "./variables";
 
-import { Task, taskInstances } from "./task";
+import { deleteDoc, doc } from "firebase/firestore";
+
+import { Task, taskInstances, db } from "./task";
 
 taskImportance.addEventListener("change", function () {
   if (taskImportance.value === `1`) {
@@ -149,8 +151,11 @@ const taskAttributeID = function (event: any) {
 
 const taskDelete = function (event: any) {
   const target = event.target;
+  console.log(`delete`);
   if (!target.classList.contains("single-btn")) return;
   const parent = target.closest(".single-task");
+  const parentId = parent.getAttribute("data-task-id");
+  console.log(`parent id: ${parentId}`);
   const btnNode = document.querySelectorAll(".single-btn");
   const btnNodeArr = [...btnNode];
   const clickedElement = btnNodeArr.indexOf(target);
@@ -160,8 +165,17 @@ const taskDelete = function (event: any) {
   deleteModalButtons?.addEventListener("click", function (event: any) {
     const target = event.target;
     console.log(`Multiple executions - why?`);
+
     if (target.id === "delete-yes") {
       parent.remove();
+      taskInstances.forEach((singleTask) => {
+        if ((singleTask as { id: number }).id == parentId) {
+          const dbId = (singleTask as { databaseId: string }).databaseId;
+          const docRef = doc(db, "tasks", dbId);
+          deleteDoc(docRef);
+        }
+      });
+
       console.log(
         `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}. ${
           btnNodeArr.length - 1
@@ -206,6 +220,7 @@ export const summaryUpdate = function () {
   const finishedTasksAmount = document.querySelectorAll("#container-finished .single-task");
 
   if (activeTasksDisplay) {
+    console.log(activeTasksAmount.length.toString());
     activeTasksDisplay.textContent = activeTasksAmount.length.toString();
   }
 
