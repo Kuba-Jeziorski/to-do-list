@@ -30,7 +30,12 @@ import {
   filterTab2,
 } from "./variables";
 
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  deleteDoc,
+  doc,
+  updateDoc,
+  // updateDoc
+} from "firebase/firestore";
 
 import { Task, taskInstances, db } from "./task";
 
@@ -64,8 +69,12 @@ const containerChange = function (event: any) {
 const fillingEditInputs = function (event: any) {
   const target = event.target;
 
-  const taskInstance = taskInstances[taskAttributeID(target)];
-  console.log(taskInstance);
+  const closestSingleTask = target.closest(".single-task");
+  const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
+  //prettier-ignore
+  const taskInstance = taskInstances.find(el => (el as { id: number }).id === +closestSingleTaskID)!;
+
+  // const taskInstance = taskInstances[taskAttributeID(target)];
 
   if (taskName) {
     taskName.value = (taskInstance as { name: string }).name;
@@ -118,7 +127,12 @@ const openEditModal = function (event: any): number {
     modalOpening("EDITING TASK");
     fillingEditInputs(event);
 
-    const taskInstance = taskInstances[taskAttributeID(target)];
+    const closestSingleTask = target.closest(".single-task");
+    const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
+
+    // const taskInstance = taskInstances[taskAttributeID(target)];
+    //prettier-ignore
+    const taskInstance = taskInstances.find((el) => (el as { id: number }).id === +closestSingleTaskID)!;
     editedTaskID = (taskInstance as { id: number }).id;
     return editedTaskID;
   }
@@ -131,27 +145,60 @@ const stateChange = function (event: any) {
   if (target.classList.contains("single-state")) {
     const closestTaskState = target.closest(".single-state");
     const closestSingleTask = target.closest(".single-task");
+    const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
     closestTaskState.classList.toggle("finished");
     closestSingleTask.classList.toggle("finished");
 
-    const taskInstance = taskInstances[taskAttributeID(target)];
-    if ((taskInstance as { state: string }).state === `active`) {
+    //prettier-ignore
+    const properSingleTask = taskInstances.find(el => (el as { id: number }).id === +closestSingleTaskID)!;
+    console.log(`properSingleTask`);
+    console.log(properSingleTask);
+
+    if ((properSingleTask as { state: string }).state === `active`) {
       console.log(`active -> finished`);
-      (taskInstance as { state: string }).state = `finished`;
+
+      taskInstances.forEach((singleTask) => {
+        if (properSingleTask) {
+          if ((singleTask as { id: number }).id == +closestSingleTaskID) {
+            console.log(`inside the loop`);
+            const dbId = (singleTask as { databaseId: string }).databaseId;
+            const docRef = doc(db, "tasks", dbId);
+            updateDoc(docRef, {
+              state: `finished`,
+            }).then(() => console.log(`state changed to finished`));
+
+            console.log(`after state change`);
+            console.log(taskInstances);
+          }
+        }
+      });
     } else {
       console.log(`finished -> active`);
-      (taskInstance as { state: string }).state = `active`;
+
+      taskInstances.forEach((singleTask) => {
+        if (properSingleTask) {
+          if ((singleTask as { id: number }).id == +closestSingleTaskID) {
+            const dbId = (singleTask as { databaseId: string }).databaseId;
+            const docRef = doc(db, "tasks", dbId);
+            updateDoc(docRef, {
+              state: `active`,
+            }).then(() => console.log(`state changed to active`));
+
+            console.log(`after state change`);
+            console.log(taskInstances);
+          }
+        }
+      });
     }
   }
 };
 
-const taskAttributeID = function (event: any) {
-  return event.closest(".single-task").getAttribute("data-task-id");
-};
+// const taskAttributeID = function (event: any) {
+//   return event.closest(".single-task").getAttribute("data-task-id");
+// };
 
 const taskDelete = function (event: any) {
   const target = event.target;
-  console.log(`delete`);
   if (!target.classList.contains("single-btn")) return;
   const parent = target.closest(".single-task");
   const parentId = parent.getAttribute("data-task-id");
@@ -220,7 +267,6 @@ export const summaryUpdate = function () {
   const finishedTasksAmount = document.querySelectorAll("#container-finished .single-task");
 
   if (activeTasksDisplay) {
-    console.log(activeTasksAmount.length.toString());
     activeTasksDisplay.textContent = activeTasksAmount.length.toString();
   }
 
@@ -334,8 +380,11 @@ export const taskContainerFunctions = function (event: any) {
 };
 
 export const taskUpdate = function () {
+  //prettier-ignore
+  const taskInstance = taskInstances.find((el) => (el as { id: number }).id === editedTaskID)!;
+
   console.log(`Task changed from:`);
-  console.log(taskInstances[editedTaskID]);
+  console.log(taskInstance);
 
   const newName = taskName.value;
   const newDescription = taskDescription.value;
@@ -343,16 +392,30 @@ export const taskUpdate = function () {
   const newDeadline = daysRemaining(taskDeadline);
   const newImportance = taskImportance.value;
 
-  (taskInstances[editedTaskID] as { name: string }).name = newName;
+  (taskInstance as { name: string }).name = newName;
   // prettier-ignore
-  (taskInstances[editedTaskID] as { description: string }).description = newDescription;
-  (taskInstances[editedTaskID] as { category: string }).category = newCategory;
-  (taskInstances[editedTaskID] as { deadline: number }).deadline = newDeadline;
+  (taskInstance as { description: string }).description = newDescription;
+  (taskInstance as { category: string }).category = newCategory;
+  (taskInstance as { deadline: number }).deadline = newDeadline;
   // prettier-ignore
-  (taskInstances[editedTaskID] as { importance: string }).importance = newImportance;
+  (taskInstance as { importance: string }).importance = newImportance;
+
+  taskInstances.forEach((singleTask) => {
+    if ((singleTask as { id: number }).id == editedTaskID) {
+      const dbId = (singleTask as { databaseId: string }).databaseId;
+      const docRef = doc(db, "tasks", dbId);
+      updateDoc(docRef, {
+        name: newName,
+        description: newDescription,
+        category: newCategory,
+        deadline: newDeadline,
+        importance: newImportance,
+      }).then(() => console.log(`properties updated`));
+    }
+  });
 
   console.log(`Task changed to:`);
-  console.log(taskInstances[editedTaskID]);
+  console.log(taskInstance);
 
   // prettier-ignore
   const currentTask = document.querySelector(`.single-task[data-task-id="${editedTaskID}"]`);

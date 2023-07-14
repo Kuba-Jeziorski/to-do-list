@@ -20,8 +20,6 @@ import {
   getFirestore,
   collection,
   onSnapshot,
-  // getDocs,
-  // doc,
   addDoc,
 } from "firebase/firestore";
 
@@ -32,22 +30,33 @@ const creatingTaskFromBase = function (array: any): void {
   allSingleTasks.forEach((singleTask) => singleTask.remove());
 
   array.map((singleElement: any) => {
-    const name = singleElement.name;
-    const description = singleElement.description;
-    const category = singleElement.category;
-    const deadline = singleElement.deadline;
-    const importance = singleElement.importance;
-    const id = singleElement.id;
-    const currentDate = singleElement.currentDate;
+    // const name = singleElement.name;
+    // const description = singleElement.description;
+    // const category = singleElement.category;
+    // const deadline = singleElement.deadline;
+    // const importance = singleElement.importance;
+    // const id = singleElement.id;
+    // const currentDate = singleElement.currentDate;
+    // const state = singleElement.state;
+
+    //prettier-ignore
+    const {name, description, category,deadline,importance ,id,currentDate,state} = singleElement;
 
     const newTaskID = id;
     //prettier-ignore
     const printBase: string = printFromBase(name, description, category, deadline, importance, currentDate);
 
-    taskContainerActive?.insertAdjacentHTML(
-      "afterbegin",
-      createdDiv(newTaskID, printBase)
-    );
+    if (state === `active`) {
+      taskContainerActive?.insertAdjacentHTML(
+        "afterbegin",
+        createdDiv(newTaskID, printBase)
+      );
+    } else {
+      taskContainerFinished?.insertAdjacentHTML(
+        "afterbegin",
+        createdDiv(newTaskID, printBase)
+      );
+    }
   });
 
   summaryUpdate();
@@ -112,11 +121,26 @@ onSnapshot(colRef, (snapshot) => {
     tasksArray.push({ ...doc.data(), databaseId: doc.id });
   });
   taskInstances = [...tasksArray];
+
+  taskInstances = taskInstances.sort((first, last) => {
+    //prettier-ignore
+    const firstId = (first as { id: number }).id;
+    const lastId = (last as { id: number }).id;
+
+    if (firstId < lastId) {
+      return -1;
+    } else if (firstId > lastId) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
   console.log(`taskInstances:`);
   console.log(taskInstances);
 
-  creatingTaskFromBase(tasksArray);
-  return tasksArray;
+  creatingTaskFromBase(taskInstances);
+  return taskInstances;
 });
 
 export class Task {
@@ -124,6 +148,13 @@ export class Task {
   description: string;
   deadline: number;
   category: string;
+  private static taskIdStart: number =
+    //prettier-ignore
+    taskInstances.reduce((max, current) => {return (current as { id: number }).id > max ? (current as { id: number }).id : max;}, -Infinity) 
+    // === -Infinity ? -1 : 
+    === -Infinity ? 0 : 
+    //prettier-ignore
+    taskInstances.reduce((max, current) => {return (current as { id: number }).id > max ? (current as { id: number }).id: max;}, -Infinity);
   public id: number;
   currentDate: string;
   importance: string;
@@ -140,13 +171,16 @@ export class Task {
     this.description = description;
     this.deadline = deadline;
     this.category = category;
-    this.id = tasksArray.length;
+    // this.id = Task.taskIdStart++;
+    this.id = Task.taskIdStart++;
     this.currentDate = currentDayCheck();
     this.importance = importance;
     this.state = `active`;
+    // Task.taskIdStart++;
   }
 
   idAttribute(): number {
+    console.log(`this.id: ${this.id}`);
     return this.id;
   }
 
@@ -213,8 +247,4 @@ export const creatingTask = function (): void {
 window.addEventListener("load", function () {
   taskContainerActive.addEventListener("click", taskContainerFunctions);
   taskContainerFinished.addEventListener("click", taskContainerFunctions);
-});
-
-taskContainerActive.addEventListener("click", function () {
-  console.log(`test`);
 });
