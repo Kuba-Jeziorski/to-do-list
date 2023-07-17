@@ -112,15 +112,31 @@ export const db = getFirestore();
 const colRef = collection(db, "tasks");
 
 // dynamically changes while there is a change (no need to refresh page)
+// let tasksArray: Task[] = [];
 let tasksArray: any[] = [];
 
 onSnapshot(colRef, (snapshot) => {
   tasksArray = [];
   taskInstances = [];
   snapshot.docs.forEach((doc) => {
+    // console.log(doc.data());
+    // console.log({ name: doc.data().name });
+    // tasksArray.push({ ...doc.data() });
     tasksArray.push({ ...doc.data(), databaseId: doc.id });
+    // tasksArray.push({
+    //   category: doc.data().category,
+    //   currentDate: doc.data().currentDate,
+    //   deadline: doc.data().deadline,
+    //   description: doc.data().description,
+    //   id: doc.data().id,
+    //   importance: doc.data().importance,
+    //   name: doc.data().name,
+    //   state: doc.data().state,
+    // });
   });
   taskInstances = [...tasksArray];
+  console.log(`here`);
+  // console.log();
 
   taskInstances = taskInstances.sort((first, last) => {
     //prettier-ignore
