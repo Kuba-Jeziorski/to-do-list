@@ -27,3 +27,14 @@ To open this project:
 
 1. npm install
 2. npm run build or npm run watch
+
+Fixes:
+
+- change an 'id' property in sorting function to timeStamp property
+- data-task-id as HTML attribute change to databaseId
+- order function may be set with timeStamp property
+
+- add method in Task class that returns all the props -> addDoc(colRef, newTask.save())
+- change logic with updateDoc -> updateDoc(docRef, taskInstance.save())
+- in taskUpdate function change logic -> taskInstancs.name = taskName.value;
+- add remove method in Task class -> task.remove; removing element from HTML and removing item from base

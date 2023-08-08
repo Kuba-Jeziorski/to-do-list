@@ -381,7 +381,7 @@ export const taskContainerFunctions = function (event: any) {
 
 export const taskUpdate = function () {
   //prettier-ignore
-  const taskInstance = taskInstances.find((el) => (el as { id: number }).id === editedTaskID)!;
+  const taskInstance: Task = taskInstances.find((el) => el.id === editedTaskID)!;
 
   console.log(`Task changed from:`);
   console.log(taskInstance);
@@ -392,27 +392,30 @@ export const taskUpdate = function () {
   const newDeadline = daysRemaining(taskDeadline);
   const newImportance = taskImportance.value;
 
-  (taskInstance as { name: string }).name = newName;
+  // taskInstancs.name = taskName.value;
+  taskInstance.name = newName;
   // prettier-ignore
-  (taskInstance as { description: string }).description = newDescription;
-  (taskInstance as { category: string }).category = newCategory;
-  (taskInstance as { deadline: number }).deadline = newDeadline;
+  taskInstance.description = newDescription;
+  taskInstance.category = newCategory;
+  taskInstance.deadline = newDeadline;
   // prettier-ignore
-  (taskInstance as { importance: string }).importance = newImportance;
+  taskInstance.importance = newImportance;
 
-  taskInstances.forEach((singleTask) => {
-    if ((singleTask as { id: number }).id == editedTaskID) {
-      const dbId = (singleTask as { databaseId: string }).databaseId;
-      const docRef = doc(db, "tasks", dbId);
-      updateDoc(docRef, {
-        name: newName,
-        description: newDescription,
-        category: newCategory,
-        deadline: newDeadline,
-        importance: newImportance,
-      }).then(() => console.log(`properties updated`));
-    }
-  });
+  // updateDoc(docRef, taskInstance.save())
+
+  // taskInstances.forEach((singleTask: Task) => {
+  //   if (singleTask.id == editedTaskID) {
+  //     const dbId = singleTask.databaseId;
+  //     const docRef = doc(db, "tasks", dbId);
+  //     updateDoc(docRef, {
+  //       name: newName,
+  //       description: newDescription,
+  //       category: newCategory,
+  //       deadline: newDeadline,
+  //       importance: newImportance,
+  //     }).then(() => console.log(`properties updated`));
+  //   }
+  // });
 
   console.log(`Task changed to:`);
   console.log(taskInstance);

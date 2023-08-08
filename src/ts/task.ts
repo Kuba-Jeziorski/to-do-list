@@ -23,7 +23,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 
-export let taskInstances: object[] = [];
+export let taskInstances: Task[] = [];
 
 const creatingTaskFromBase = function (array: any): void {
   const allSingleTasks = document.querySelectorAll(".single-task");
@@ -175,6 +175,8 @@ export class Task {
   currentDate: string;
   importance: string;
   state: string;
+  timeStamp: number;
+  databaseId?: string;
 
   constructor(
     name: string,
@@ -192,6 +194,7 @@ export class Task {
     this.currentDate = currentDayCheck();
     this.importance = importance;
     this.state = `active`;
+    this.timeStamp = Date.now();
     // Task.taskIdStart++;
   }
 
@@ -250,12 +253,14 @@ export const creatingTask = function (): void {
     currentDate: currentDayCheck(),
     deadline: daysRemaining(taskDeadline),
     description: description,
-    id: newTask.idAttribute(),
+    // id: newTask.idAttribute(),
     importance: taskImportance.value,
     name: name,
     state: "active",
-  }).then(() => {
+    timeStamp: newTask.timeStamp,
+  }).then((data) => {
     console.log(`submited`);
+    newTask.databaseId = data.id;
   });
   // firebase
 };
