@@ -30,11 +30,12 @@ To open this project:
 
 Fixes:
 
-- change an 'id' property in sorting function to timeStamp property
-- data-task-id as HTML attribute change to databaseId
-- order function may be set with timeStamp property
+- change an 'id' property in sorting function to timeStamp property [done]
+- data-task-id as HTML attribute change to databaseId [done]
+- fix deleting function - change id to databaseId [done]
+- issue with filtering with multiple checkbox (importance low, category education) [done]
 
-- add method in Task class that returns all the props -> addDoc(colRef, newTask.save())
-- change logic with updateDoc -> updateDoc(docRef, taskInstance.save())
-- in taskUpdate function change logic -> taskInstancs.name = taskName.value;
-- add remove method in Task class -> task.remove; removing element from HTML and removing item from base
+- add method in Task class that returns all the props -> addDoc(colRef, newTask.save()) [done]
+- change logic with updateDoc -> updateDoc(docRef, taskInstance.save()) [updating()/to-do]
+- in taskUpdate function change logic -> taskInstancs.name = taskName.value; [done]
+- add remove method in Task class -> task.remove; removing element from HTML and removing item from base [to-do]

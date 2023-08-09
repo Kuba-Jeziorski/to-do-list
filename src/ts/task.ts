@@ -29,32 +29,25 @@ const creatingTaskFromBase = function (array: any): void {
   const allSingleTasks = document.querySelectorAll(".single-task");
   allSingleTasks.forEach((singleTask) => singleTask.remove());
 
+  console.log(`arr`);
+  console.log(array);
+
   array.map((singleElement: any) => {
-    // const name = singleElement.name;
-    // const description = singleElement.description;
-    // const category = singleElement.category;
-    // const deadline = singleElement.deadline;
-    // const importance = singleElement.importance;
-    // const id = singleElement.id;
-    // const currentDate = singleElement.currentDate;
-    // const state = singleElement.state;
-
     //prettier-ignore
-    const {name, description, category,deadline,importance ,id,currentDate,state} = singleElement;
+    const {name, description, category, deadline, importance, databaseId, currentDate, state} = singleElement;
 
-    const newTaskID = id;
     //prettier-ignore
     const printBase: string = printFromBase(name, description, category, deadline, importance, currentDate);
 
     if (state === `active`) {
       taskContainerActive?.insertAdjacentHTML(
         "afterbegin",
-        createdDiv(newTaskID, printBase)
+        createdDiv(databaseId, printBase)
       );
     } else {
       taskContainerFinished?.insertAdjacentHTML(
         "afterbegin",
-        createdDiv(newTaskID, printBase)
+        createdDiv(databaseId, printBase)
       );
     }
   });
@@ -138,19 +131,19 @@ onSnapshot(colRef, (snapshot) => {
   console.log(`here`);
   // console.log();
 
-  taskInstances = taskInstances.sort((first, last) => {
-    //prettier-ignore
-    const firstId = (first as { id: number }).id;
-    const lastId = (last as { id: number }).id;
+  // taskInstances = taskInstances.sort((first, last) => {
+  //   //prettier-ignore
+  //   const firstId = (first as { id: number }).id;
+  //   const lastId = (last as { id: number }).id;
 
-    if (firstId < lastId) {
-      return -1;
-    } else if (firstId > lastId) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+  //   if (firstId < lastId) {
+  //     return -1;
+  //   } else if (firstId > lastId) {
+  //     return 1;
+  //   } else {
+  //     return 0;
+  //   }
+  // });
 
   console.log(`taskInstances:`);
   console.log(taskInstances);
@@ -164,14 +157,6 @@ export class Task {
   description: string;
   deadline: number;
   category: string;
-  private static taskIdStart: number =
-    //prettier-ignore
-    taskInstances.reduce((max, current) => {return (current as { id: number }).id > max ? (current as { id: number }).id : max;}, -Infinity) 
-    // === -Infinity ? -1 : 
-    === -Infinity ? 0 : 
-    //prettier-ignore
-    taskInstances.reduce((max, current) => {return (current as { id: number }).id > max ? (current as { id: number }).id: max;}, -Infinity);
-  public id: number;
   currentDate: string;
   importance: string;
   state: string;
@@ -189,18 +174,33 @@ export class Task {
     this.description = description;
     this.deadline = deadline;
     this.category = category;
-    // this.id = Task.taskIdStart++;
-    this.id = Task.taskIdStart++;
     this.currentDate = currentDayCheck();
     this.importance = importance;
     this.state = `active`;
     this.timeStamp = Date.now();
-    // Task.taskIdStart++;
   }
 
-  idAttribute(): number {
-    console.log(`this.id: ${this.id}`);
-    return this.id;
+  save() {
+    return {
+      category: this.category,
+      currentDate: this.currentDate,
+      deadline: this.deadline,
+      description: this.description,
+      importance: this.importance,
+      name: this.name,
+      state: this.state,
+      timeStamp: this.timeStamp,
+    };
+  }
+
+  updating() {
+    return {
+      name: this.name,
+      description: this.description,
+      category: this.category,
+      deadline: this.deadline,
+      importance: this.importance,
+    };
   }
 
   print(): string {
@@ -238,31 +238,18 @@ export const creatingTask = function (): void {
   const newTask = new Task(name, description, deadline, category, importance);
   taskInstances.push(newTask);
   const newTaskPrint = newTask.print();
-  const newTaskID = newTask.idAttribute();
+  const newTaskID = newTask.databaseId;
 
   taskContainerActive?.insertAdjacentHTML(
     "beforebegin",
     createdDiv(newTaskID, newTaskPrint)
   );
 
-  // console.log(`id: ${idNumber}`);
-
   // firebase
-  addDoc(colRef, {
-    category: taskCategories.options[taskCategories.selectedIndex].text,
-    currentDate: currentDayCheck(),
-    deadline: daysRemaining(taskDeadline),
-    description: description,
-    // id: newTask.idAttribute(),
-    importance: taskImportance.value,
-    name: name,
-    state: "active",
-    timeStamp: newTask.timeStamp,
-  }).then((data) => {
+  addDoc(colRef, newTask.save()).then((data) => {
     console.log(`submited`);
     newTask.databaseId = data.id;
   });
-  // firebase
 };
 
 window.addEventListener("load", function () {

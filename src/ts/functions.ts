@@ -72,7 +72,7 @@ const fillingEditInputs = function (event: any) {
   const closestSingleTask = target.closest(".single-task");
   const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
   //prettier-ignore
-  const taskInstance = taskInstances.find(el => (el as { id: number }).id === +closestSingleTaskID)!;
+  const taskInstance = taskInstances.find(el => el.databaseId === closestSingleTaskID)!;
 
   // const taskInstance = taskInstances[taskAttributeID(target)];
 
@@ -120,7 +120,7 @@ const fillingEditInputs = function (event: any) {
   }
 };
 
-let editedTaskID = 0;
+let editedTaskID: any;
 const openEditModal = function (event: any): number {
   const target = event.target;
   if (target.classList.contains("single-edit")) {
@@ -132,8 +132,8 @@ const openEditModal = function (event: any): number {
 
     // const taskInstance = taskInstances[taskAttributeID(target)];
     //prettier-ignore
-    const taskInstance = taskInstances.find((el) => (el as { id: number }).id === +closestSingleTaskID)!;
-    editedTaskID = (taskInstance as { id: number }).id;
+    const taskInstance = taskInstances.find((el) => el.databaseId === closestSingleTaskID)!;
+    editedTaskID = taskInstance.databaseId;
     return editedTaskID;
   }
   return 1;
@@ -150,7 +150,7 @@ const stateChange = function (event: any) {
     closestSingleTask.classList.toggle("finished");
 
     //prettier-ignore
-    const properSingleTask = taskInstances.find(el => (el as { id: number }).id === +closestSingleTaskID)!;
+    const properSingleTask = taskInstances.find(el => el.databaseId === closestSingleTaskID)!;
     console.log(`properSingleTask`);
     console.log(properSingleTask);
 
@@ -159,7 +159,7 @@ const stateChange = function (event: any) {
 
       taskInstances.forEach((singleTask) => {
         if (properSingleTask) {
-          if ((singleTask as { id: number }).id == +closestSingleTaskID) {
+          if (singleTask.databaseId == closestSingleTaskID) {
             console.log(`inside the loop`);
             const dbId = (singleTask as { databaseId: string }).databaseId;
             const docRef = doc(db, "tasks", dbId);
@@ -177,7 +177,7 @@ const stateChange = function (event: any) {
 
       taskInstances.forEach((singleTask) => {
         if (properSingleTask) {
-          if ((singleTask as { id: number }).id == +closestSingleTaskID) {
+          if (singleTask.databaseId == closestSingleTaskID) {
             const dbId = (singleTask as { databaseId: string }).databaseId;
             const docRef = doc(db, "tasks", dbId);
             updateDoc(docRef, {
@@ -216,7 +216,8 @@ const taskDelete = function (event: any) {
     if (target.id === "delete-yes") {
       parent.remove();
       taskInstances.forEach((singleTask) => {
-        if ((singleTask as { id: number }).id == parentId) {
+        console.log(singleTask);
+        if (singleTask.databaseId == parentId) {
           const dbId = (singleTask as { databaseId: string }).databaseId;
           const docRef = doc(db, "tasks", dbId);
           deleteDoc(docRef);
@@ -280,7 +281,7 @@ export const summaryUpdate = function () {
   }
 };
 
-export const createdDiv = function (id: number, data: string) {
+export const createdDiv = function (id: any, data: string) {
   return `
   <div class="single-task" data-task-id="${id}">
   ${data}
@@ -338,6 +339,8 @@ export const inputValidation = function () {
 };
 
 export const daysRemaining = function (date: any) {
+  console.log(`this date:`);
+  console.log(date);
   const futureDateString = date.value;
 
   const dateComponents = futureDateString.split("-");
@@ -381,41 +384,41 @@ export const taskContainerFunctions = function (event: any) {
 
 export const taskUpdate = function () {
   //prettier-ignore
-  const taskInstance: Task = taskInstances.find((el) => el.id === editedTaskID)!;
+  const taskInstance: Task = taskInstances.find((el) => el.databaseId === editedTaskID)!;
 
   console.log(`Task changed from:`);
   console.log(taskInstance);
 
-  const newName = taskName.value;
-  const newDescription = taskDescription.value;
-  const newCategory = taskCategories.options[taskCategories.selectedIndex].text;
-  const newDeadline = daysRemaining(taskDeadline);
-  const newImportance = taskImportance.value;
-
   // taskInstancs.name = taskName.value;
-  taskInstance.name = newName;
+  taskInstance.name = taskName.value;
   // prettier-ignore
-  taskInstance.description = newDescription;
-  taskInstance.category = newCategory;
-  taskInstance.deadline = newDeadline;
+  taskInstance.description = taskDescription.value;
+  taskInstance.category =
+    taskCategories.options[taskCategories.selectedIndex].text;
+  taskInstance.deadline = daysRemaining(taskDeadline);
   // prettier-ignore
-  taskInstance.importance = newImportance;
+  taskInstance.importance = taskImportance.value;
 
   // updateDoc(docRef, taskInstance.save())
 
-  // taskInstances.forEach((singleTask: Task) => {
-  //   if (singleTask.id == editedTaskID) {
-  //     const dbId = singleTask.databaseId;
-  //     const docRef = doc(db, "tasks", dbId);
-  //     updateDoc(docRef, {
-  //       name: newName,
-  //       description: newDescription,
-  //       category: newCategory,
-  //       deadline: newDeadline,
-  //       importance: newImportance,
-  //     }).then(() => console.log(`properties updated`));
-  //   }
-  // });
+  taskInstances.forEach((singleTask: Task) => {
+    if (singleTask.databaseId == editedTaskID) {
+      console.log(`single task:`);
+      console.log(singleTask);
+      const dbId = (singleTask as { databaseId: string }).databaseId;
+      const docRef = doc(db, "tasks", dbId);
+      // updateDoc(docRef, singleTask.updating()).then(() =>
+      //   console.log(`properties updated`)
+      // );
+      updateDoc(docRef, {
+        name: taskName.value,
+        description: taskDescription.value,
+        category: taskCategories.options[taskCategories.selectedIndex].text,
+        deadline: daysRemaining(taskDeadline),
+        importance: taskImportance.value,
+      }).then(() => console.log(`properties updated`));
+    }
+  });
 
   console.log(`Task changed to:`);
   console.log(taskInstance);
@@ -431,10 +434,10 @@ export const taskUpdate = function () {
   // prettier-ignore
   let currentTaskDescription = currentTask?.querySelector(".single-description") as HTMLDivElement;
 
-  if (!isNaN(newDeadline)) {
-    currentTaskDays.textContent = `${newDeadline.toString()} ${
-      Math.abs(newDeadline) === 1 ? "day" : "days"
-    } ${newDeadline >= 0 ? "till" : "past"} deadline`;
+  if (!isNaN(daysRemaining(taskDeadline))) {
+    currentTaskDays.textContent = `${daysRemaining(taskDeadline).toString()} ${
+      Math.abs(daysRemaining(taskDeadline)) === 1 ? "day" : "days"
+    } ${daysRemaining(taskDeadline) >= 0 ? "till" : "past"} deadline`;
   }
 
   const nameImportance = document.querySelector(".single-task .single-name");
@@ -443,18 +446,19 @@ export const taskUpdate = function () {
     nameImportance?.classList.remove(singleImportance)
   );
   let importanceNameClass = ``;
-  if (newImportance === `1`) {
+  if (taskImportance.value === `1`) {
     importanceNameClass = `low`;
-  } else if (newImportance === `2`) {
+  } else if (taskImportance.value === `2`) {
     importanceNameClass = `medium`;
   } else {
     importanceNameClass = `high`;
   }
   nameImportance?.classList.add(importanceNameClass);
 
-  currentTaskName.textContent = newName;
-  currentTaskCategory.textContent = newCategory;
-  currentTaskDescription.textContent = newDescription;
+  currentTaskName.textContent = taskName.value;
+  currentTaskCategory.textContent =
+    taskCategories.options[taskCategories.selectedIndex].text;
+  currentTaskDescription.textContent = taskDescription.value;
 };
 
 let filteredArray: any[] = [];
@@ -464,12 +468,14 @@ filterActiveBtn.addEventListener("click", function (): any[] {
   filteredArray = [];
 
   taskInstances.forEach((singleInstance) => {
-    if ((singleInstance as { state: string }).state === `active`) {
+    if (singleInstance.state === `active`) {
       filteredArray.push(singleInstance);
     }
   });
   console.log(`Amount of all items: ${taskInstances.length}`);
-  console.log(`Amount of filtered items: ${filteredArray.length}`);
+  console.log(
+    `Amount of filtered (active state) items: ${filteredArray.length}`
+  );
 
   console.log(filteredArray);
   return filteredArray;
@@ -480,13 +486,15 @@ filterFinishedBtn.addEventListener("click", function () {
   const filteredArray: any[] = [];
 
   taskInstances.forEach((singleInstance) => {
-    if ((singleInstance as { state: string }).state === `finished`) {
+    if (singleInstance.state === `finished`) {
       filteredArray.push(singleInstance);
     }
   });
 
   console.log(`Amount of all items: ${taskInstances.length}`);
-  console.log(`Amount of filtered items: ${filteredArray.length}`);
+  console.log(
+    `Amount of filtered (finished state) items: ${filteredArray.length}`
+  );
 
   console.log(filteredArray);
 });
@@ -507,7 +515,7 @@ filterDefault.addEventListener("click", function () {
   // sort tab
   if (filterTab2.checked) {
     const defaultSort = document.querySelector(
-      '#tab-sort input[type="radio"][name="sorting"][category="id-2"]'
+      '#tab-sort input[type="radio"][name="sorting"][category="timeStamp-2"]'
     ) as HTMLInputElement;
     defaultSort.checked = true;
   }
@@ -530,7 +538,12 @@ filterSubmit.addEventListener("click", function () {
     const categoryArray: string[] = [];
     const deadlineArray: string[] = [];
 
+    console.log(`checkboxesNamesArray`);
+    console.log(checkboxesNamesArray);
+
     checkboxesNamesArray.map((singleName) => {
+      console.log(`singleName`);
+      console.log(singleName);
       if (singleName.includes("importance")) {
         importanceArray.push(singleName);
       } else if (singleName.includes("category")) {
@@ -539,43 +552,42 @@ filterSubmit.addEventListener("click", function () {
         deadlineArray.push(singleName);
       }
     });
-
+    console.log(`filteredArray`);
+    console.log(filteredArray);
     if (checkboxesNamesArray.length > 0) {
       filteredArray.map((singleTask) => {
-        let thisTaskID = (singleTask as { id: number }).id;
+        let thisTaskID = singleTask.databaseId;
         //prettier-ignore
         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
         //prettier-ignore
-        const thisTaskImportance = (singleTask as { importance: string }).importance;
-        const thisTaskCategory = (singleTask as { category: string }).category;
+        const thisTaskImportance = singleTask.importance;
+        const thisTaskCategory = singleTask.category;
         //prettier-ignore
-        const thisTaskDeadline = Math.abs((singleTask as { deadline: number }).deadline);
+        const thisTaskDeadline = Math.abs(singleTask.deadline);
 
         (thisTaskDiv as HTMLElement).style.display = "none";
 
         //prettier-ignore
-        const shortenImportanceArray = importanceArray.map(item => item.replace('importance-', ''));
+        const selectedImportance = importanceArray.map(item => item.replace('importance-', ''));
         //prettier-ignore
-        const shortenCategoryArray = categoryArray.map(item => item.replace('category-', ''));
+        const selectedCategories = categoryArray.map(item => item.replace('category-', ''));
         //prettier-ignore
-        const shortenDeadlineArray = deadlineArray.map(item => item.replace("deadline-", ""));
-
-        if (shortenImportanceArray.includes(`${thisTaskImportance}`)) {
-          (thisTaskDiv as HTMLElement).style.display = "flex";
-        }
-
-        if (shortenCategoryArray.includes(`${thisTaskCategory}`)) {
-          (thisTaskDiv as HTMLElement).style.display = "flex";
-        }
+        const selectedDeadline = deadlineArray.map(item => item.replace("deadline-", ""));
 
         //prettier-ignore
-        if (thisTaskDeadline <= +shortenDeadlineArray[0]) {
-          (thisTaskDiv as HTMLElement).style.display = "flex";
+        const importanceMatch = selectedImportance.length === 0 || selectedImportance.includes(`${thisTaskImportance}`);
+        //prettier-ignore
+        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(`${thisTaskCategory}`);
+        //prettier-ignore
+        const deadlineMatch = selectedDeadline.length === 0 || thisTaskDeadline <= +selectedDeadline[0];
+
+        if (importanceMatch && categoryMatch && deadlineMatch) {
+          thisTaskDiv.style.display = "flex";
         }
       });
     } else {
       filteredArray.map((singleTask) => {
-        let thisTaskID = (singleTask as { id: number }).id;
+        let thisTaskID = singleTask.databaseId;
         //prettier-ignore
         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
 
@@ -614,7 +626,7 @@ filterSubmit.addEventListener("click", function () {
 
     sortedArray.map((singleTask: Task, singleIndex) => {
       //prettier-ignore
-      const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.id}"]`)!;
+      const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.databaseId}"]`)!;
 
       //prettier-ignore
       (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
