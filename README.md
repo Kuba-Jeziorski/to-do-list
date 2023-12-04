@@ -34,6 +34,7 @@ Fixes:
 - data-task-id as HTML attribute change to databaseId [done]
 - fix deleting function - change id to databaseId [done]
 - issue with filtering with multiple checkbox (importance low, category education) [done]
+- make new database [to-do]
 
 - add method in Task class that returns all the props -> addDoc(colRef, newTask.save()) [done]
 - change logic with updateDoc -> updateDoc(docRef, taskInstance.save()) [updating()/to-do]

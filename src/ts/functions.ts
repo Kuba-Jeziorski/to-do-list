@@ -15,7 +15,6 @@ import {
   taskContainerActive,
   taskContainerFinished,
   taskDescription,
-  // taskInstances,
   taskName,
   taskCategories,
   taskDeadline,
@@ -37,7 +36,9 @@ import {
   // updateDoc
 } from "firebase/firestore";
 
-import { Task, taskInstances, db } from "./task";
+import { taskInstances, findTask } from "./tasks";
+import Task from "./scheme/Task";
+import db, { updateTask, removeTask } from "./db";
 
 taskImportance.addEventListener("change", function () {
   if (taskImportance.value === `1`) {
@@ -66,56 +67,68 @@ const containerChange = function (event: any) {
   summaryUpdate();
 };
 
+export const currentTaskId = (event: any) => {
+  const target = event.target;
+  const taskId = target.getAttribute("data-task-id");
+  return taskId;
+};
+
 const fillingEditInputs = function (event: any) {
   const target = event.target;
 
   const closestSingleTask = target.closest(".single-task");
   const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
+
+  console.log("closestSingleTaskID", closestSingleTaskID);
   //prettier-ignore
-  const taskInstance = taskInstances.find(el => el.databaseId === closestSingleTaskID)!;
+  const taskInstance: Task | undefined = findTask(closestSingleTaskID);
 
-  // const taskInstance = taskInstances[taskAttributeID(target)];
-
-  if (taskName) {
-    taskName.value = (taskInstance as { name: string }).name;
-  }
-
-  if (taskDescription) {
-    // prettier-ignore
-    taskDescription.value = (taskInstance as { description: string }).description;
-    if (taskDescription.value == "") {
-      textareaPlaceholder.style.display = "block";
-    } else {
-      textareaPlaceholder.style.display = "none";
+  if (typeof taskInstance === "undefined") {
+    console.warn("dupa nie znaleziono");
+  } else {
+    if (taskName) {
+      taskName.value = taskInstance.name;
     }
-  }
 
-  if (taskCategories) {
-    const selectedOption = (taskInstance as { category: string }).category;
-    const taskCategoriesOptions = taskCategories.options;
-    for (let i = 0; i < taskCategoriesOptions.length; i++) {
-      if (taskCategoriesOptions[i].text === selectedOption) {
-        const selectedOptionValue = taskCategoriesOptions[i].value;
-        taskCategories.selectedIndex = +selectedOptionValue;
+    if (taskDescription) {
+      // prettier-ignore
+      taskDescription.value = (taskInstance as { description: string }).description;
+      if (taskDescription.value == "") {
+        textareaPlaceholder.style.display = "block";
+      } else {
+        textareaPlaceholder.style.display = "none";
       }
     }
-  }
 
-  if (taskImportance) {
-    taskImportance.value = (taskInstance as { importance: string }).importance;
-  }
+    if (taskCategories) {
+      const selectedOption = (taskInstance as { category: string }).category;
+      const taskCategoriesOptions = taskCategories.options;
+      for (let i = 0; i < taskCategoriesOptions.length; i++) {
+        if (taskCategoriesOptions[i].text === selectedOption) {
+          const selectedOptionValue = taskCategoriesOptions[i].value;
+          taskCategories.selectedIndex = +selectedOptionValue;
+        }
+      }
+    }
 
-  if (taskDeadline) {
-    const daysTillDeadline = (taskInstance as { deadline: number }).deadline;
+    if (taskImportance) {
+      taskImportance.value = (
+        taskInstance as { importance: string }
+      ).importance;
+    }
 
-    if (isNaN(daysTillDeadline)) {
-      taskDeadline.value = "";
-    } else {
-      const currentDate = new Date();
-      // prettier-ignore
-      const dateOfDeadline = new Date(currentDate.setDate(currentDate.getDate() + daysTillDeadline));
-      const dataInputValue = dateOfDeadline.toISOString().split("T")[0];
-      taskDeadline.value = dataInputValue;
+    if (taskDeadline) {
+      const daysTillDeadline = (taskInstance as { deadline: number }).deadline;
+
+      if (isNaN(daysTillDeadline)) {
+        taskDeadline.value = "";
+      } else {
+        const currentDate = new Date();
+        // prettier-ignore
+        const dateOfDeadline = new Date(currentDate.setDate(currentDate.getDate() + daysTillDeadline));
+        const dataInputValue = dateOfDeadline.toISOString().split("T")[0];
+        taskDeadline.value = dataInputValue;
+      }
     }
   }
 };
@@ -132,9 +145,11 @@ const openEditModal = function (event: any): number {
 
     // const taskInstance = taskInstances[taskAttributeID(target)];
     //prettier-ignore
-    const taskInstance = taskInstances.find((el) => el.databaseId === closestSingleTaskID)!;
-    editedTaskID = taskInstance.databaseId;
-    return editedTaskID;
+    const taskInstance =findTask(closestSingleTaskID);
+    if (typeof taskInstance !== "undefined") {
+      editedTaskID = taskInstance.id;
+      return editedTaskID;
+    }
   }
   return 1;
 };
@@ -215,14 +230,7 @@ const taskDelete = function (event: any) {
 
     if (target.id === "delete-yes") {
       parent.remove();
-      taskInstances.forEach((singleTask) => {
-        console.log(singleTask);
-        if (singleTask.databaseId == parentId) {
-          const dbId = (singleTask as { databaseId: string }).databaseId;
-          const docRef = doc(db, "tasks", dbId);
-          deleteDoc(docRef);
-        }
-      });
+      removeTask(parentId);
 
       console.log(
         `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}. ${
@@ -375,16 +383,17 @@ export const placeholderDisplayChange = function () {
 };
 
 export const taskContainerFunctions = function (event: any) {
+  console.log("fdsdsdaa");
   taskDelete(event);
-  taskToggleDescription(event);
-  stateChange(event);
-  containerChange(event);
+  // taskToggleDescription(event);
+  // stateChange(event);
+  // containerChange(event);
   openEditModal(event);
 };
 
 export const taskUpdate = function () {
   //prettier-ignore
-  const taskInstance: Task = taskInstances.find((el) => el.databaseId === editedTaskID)!;
+  const taskInstance: Task = findTask(editedTaskID)!;
 
   console.log(`Task changed from:`);
   console.log(taskInstance);
@@ -399,26 +408,7 @@ export const taskUpdate = function () {
   // prettier-ignore
   taskInstance.importance = taskImportance.value;
 
-  // updateDoc(docRef, taskInstance.save())
-
-  taskInstances.forEach((singleTask: Task) => {
-    if (singleTask.databaseId == editedTaskID) {
-      console.log(`single task:`);
-      console.log(singleTask);
-      const dbId = (singleTask as { databaseId: string }).databaseId;
-      const docRef = doc(db, "tasks", dbId);
-      // updateDoc(docRef, singleTask.updating()).then(() =>
-      //   console.log(`properties updated`)
-      // );
-      updateDoc(docRef, {
-        name: taskName.value,
-        description: taskDescription.value,
-        category: taskCategories.options[taskCategories.selectedIndex].text,
-        deadline: daysRemaining(taskDeadline),
-        importance: taskImportance.value,
-      }).then(() => console.log(`properties updated`));
-    }
-  });
+  updateTask(taskInstance);
 
   console.log(`Task changed to:`);
   console.log(taskInstance);
@@ -658,3 +648,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 taskDescription.addEventListener("input", placeholderDisplayChange);
+
+export const getOptionValue = () => {
+  return "test-category";
+};
