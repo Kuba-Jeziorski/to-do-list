@@ -54,16 +54,11 @@ initializeApp(firebaseConfig);
 // init services
 const db = getFirestore();
 
-console.log(db);
-
 // collection ref
 export const colRef = collection(db, "tasks");
 
 export const sendTask = (task: Task): void => {
-  addDoc(colRef, task.toSave()).then((data) => {
-    console.log(`submited`);
-    // newTask.databaseId = data.id;
-  });
+  addDoc(colRef, task.toSave());
 };
 
 export const removeTask = (taskId: string): void => {

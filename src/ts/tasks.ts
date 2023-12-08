@@ -1,29 +1,29 @@
 import {
   createdDiv,
-  daysRemaining,
+  // daysRemaining,
   taskContainerFunctions,
   // currentDayCheck,
-  summaryUpdate,
+  // summaryUpdate,
 } from "./functions";
 
 import Task from "./scheme/Task";
 import TaskPrinter from "./TaskPrinter";
 
 import {
-  taskName,
-  taskDescription,
+  // taskName,
+  // taskDescription,
   taskContainerActive,
   taskContainerFinished,
-  taskCategories,
-  taskDeadline,
-  taskImportance,
+  // taskCategories,
+  // taskDeadline,
+  // taskImportance,
 } from "./variables";
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
 import {
-  getFirestore,
-  collection,
+  // getFirestore,
+  // collection,
   onSnapshot,
-  addDoc,
+  // addDoc,
 } from "firebase/firestore";
 
 import { colRef } from "./db";
@@ -34,10 +34,8 @@ onSnapshot(colRef, (snapshot) => {
   const taskWrapperTasks = document.querySelectorAll(
     ".container-task-active .single-task"
   );
-  console.log(taskWrapperTasks.length);
   taskWrapperTasks.forEach((el) => el.remove());
 
-  // console.log(taskContainerActive);
   taskInstances = snapshot.docs.map((doc) => {
     return new Task({
       id: doc.id,
@@ -55,16 +53,24 @@ export const findTask = (taskId: string): Task | undefined => {
 };
 
 export const creatingTask = function (task: Task): void {
+  console.log(`creatingTask`);
   const taskPrinter = new TaskPrinter(task);
   const newTaskPrint = taskPrinter.printHtml();
-  taskContainerActive?.insertAdjacentHTML(
-    "afterbegin",
-    createdDiv(task.id, newTaskPrint)
-  );
+  const newTaskState = taskPrinter.addStateClass();
+  if (task.state === "active") {
+    taskContainerActive?.insertAdjacentHTML(
+      "afterbegin",
+      createdDiv(task.id, newTaskPrint, newTaskState)
+    );
+  } else {
+    taskContainerFinished?.insertAdjacentHTML(
+      "afterbegin",
+      createdDiv(task.id, newTaskPrint, newTaskState)
+    );
+  }
 };
 
 window.addEventListener("load", function () {
-  console.log(`ttt`, taskContainerActive);
   taskContainerActive.addEventListener("click", taskContainerFunctions);
   taskContainerFinished.addEventListener("click", taskContainerFunctions);
 });

@@ -30,7 +30,7 @@ import {
 } from "./variables";
 
 import {
-  deleteDoc,
+  // deleteDoc,
   doc,
   updateDoc,
   // updateDoc
@@ -54,17 +54,51 @@ validateBtn.addEventListener("click", function () {
   validateModal.classList.remove("active");
 });
 
-const containerChange = function (event: any) {
+const deleteExistingNode = function (parent: HTMLElement) {
+  console.log(`deleteExistingNode`);
+  const allItems = parent.querySelectorAll(".single-task");
+  const allItemsArr = [...allItems];
+  allItemsArr.map((item) => item.remove());
+};
+
+const stateChange = function (event: any) {
   const target = event.target;
+
   if (target.classList.contains("single-state")) {
     const closestSingleTask = target.closest(".single-task");
-    if (target.classList.contains("finished")) {
-      taskContainerFinished?.appendChild(closestSingleTask);
-    } else {
-      taskContainerActive?.appendChild(closestSingleTask);
+    const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
+
+    const properSingleTask = findTask(closestSingleTaskID);
+
+    if (properSingleTask) {
+      if (properSingleTask.state === `active`) {
+        closestSingleTask.classList.add("finished");
+
+        const dbId = properSingleTask.id;
+        if (!!dbId) {
+          const docRef = doc(db, "tasks", dbId);
+          updateDoc(docRef, {
+            state: `finished`,
+          });
+        }
+      } else {
+        closestSingleTask.classList.remove("finished");
+
+        if (properSingleTask) {
+          const dbId = properSingleTask.id;
+          if (!!dbId) {
+            const docRef = doc(db, "tasks", dbId);
+            updateDoc(docRef, {
+              state: `active`,
+            });
+          }
+        }
+      }
+
+      deleteExistingNode(taskContainerFinished);
+      deleteExistingNode(taskContainerActive);
     }
   }
-  summaryUpdate();
 };
 
 export const currentTaskId = (event: any) => {
@@ -154,64 +188,6 @@ const openEditModal = function (event: any): number {
   return 1;
 };
 
-const stateChange = function (event: any) {
-  const target = event.target;
-
-  if (target.classList.contains("single-state")) {
-    const closestTaskState = target.closest(".single-state");
-    const closestSingleTask = target.closest(".single-task");
-    const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
-    closestTaskState.classList.toggle("finished");
-    closestSingleTask.classList.toggle("finished");
-
-    //prettier-ignore
-    const properSingleTask = taskInstances.find(el => el.databaseId === closestSingleTaskID)!;
-    console.log(`properSingleTask`);
-    console.log(properSingleTask);
-
-    if ((properSingleTask as { state: string }).state === `active`) {
-      console.log(`active -> finished`);
-
-      taskInstances.forEach((singleTask) => {
-        if (properSingleTask) {
-          if (singleTask.databaseId == closestSingleTaskID) {
-            console.log(`inside the loop`);
-            const dbId = (singleTask as { databaseId: string }).databaseId;
-            const docRef = doc(db, "tasks", dbId);
-            updateDoc(docRef, {
-              state: `finished`,
-            }).then(() => console.log(`state changed to finished`));
-
-            console.log(`after state change`);
-            console.log(taskInstances);
-          }
-        }
-      });
-    } else {
-      console.log(`finished -> active`);
-
-      taskInstances.forEach((singleTask) => {
-        if (properSingleTask) {
-          if (singleTask.databaseId == closestSingleTaskID) {
-            const dbId = (singleTask as { databaseId: string }).databaseId;
-            const docRef = doc(db, "tasks", dbId);
-            updateDoc(docRef, {
-              state: `active`,
-            }).then(() => console.log(`state changed to active`));
-
-            console.log(`after state change`);
-            console.log(taskInstances);
-          }
-        }
-      });
-    }
-  }
-};
-
-// const taskAttributeID = function (event: any) {
-//   return event.closest(".single-task").getAttribute("data-task-id");
-// };
-
 const taskDelete = function (event: any) {
   const target = event.target;
   if (!target.classList.contains("single-btn")) return;
@@ -245,9 +221,9 @@ const taskDelete = function (event: any) {
 const taskToggleDescription = function (event: any) {
   const target = event.target;
   if (
-    !target.classList.contains("single-state") &&
-    !target.classList.contains("single-edit") &&
-    !target.classList.contains("single-btn")
+    !["single-state", "single-edit", "single-btn"].some((className) =>
+      target.classList.contains(className)
+    )
   ) {
     const closestSingleTask = target.closest(".single-task");
     closestSingleTask.classList.toggle("open");
@@ -289,9 +265,9 @@ export const summaryUpdate = function () {
   }
 };
 
-export const createdDiv = function (id: any, data: string) {
+export const createdDiv = function (id: any, data: string, state: string) {
   return `
-  <div class="single-task" data-task-id="${id}">
+  <div class="single-task ${state}" data-task-id="${id}">
   ${data}
     <div class="single-btn">
     </div>
@@ -383,11 +359,9 @@ export const placeholderDisplayChange = function () {
 };
 
 export const taskContainerFunctions = function (event: any) {
-  console.log("fdsdsdaa");
   taskDelete(event);
-  // taskToggleDescription(event);
-  // stateChange(event);
-  // containerChange(event);
+  taskToggleDescription(event);
+  stateChange(event);
   openEditModal(event);
 };
 

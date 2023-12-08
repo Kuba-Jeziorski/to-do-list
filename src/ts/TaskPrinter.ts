@@ -31,20 +31,10 @@ export default class TaskPrinter {
     const returnCurrentDate = `<p class="single-current">Task created on ${task.currentDate}</p>`;
     return `${returnDaysRemaining}${returnName}${returnCategory}${returnDescription}${returnCurrentDate}`;
   }
+
+  addStateClass(): string {
+    const task = this.task;
+    const taskState = task.state;
+    return taskState === "finished" ? "finished" : "";
+  }
 }
-
-// export const creatingTask = function (): void {
-//   const newTaskPrint = newTask.print();
-//   const newTaskID = newTask.databaseId;
-
-//   taskContainerActive?.insertAdjacentHTML(
-//     "beforebegin",
-//     createdDiv(newTaskID, newTaskPrint)
-//   );
-
-//   // firebase
-//   //   addDoc(colRef, newTask.save()).then((data) => {
-//   //     console.log(`submited`);
-//   //     newTask.databaseId = data.id;
-//   //   });
-// };
