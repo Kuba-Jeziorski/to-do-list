@@ -1,30 +1,11 @@
-import {
-  createdDiv,
-  // daysRemaining,
-  taskContainerFunctions,
-  // currentDayCheck,
-  // summaryUpdate,
-} from "./functions";
+import { createdDiv, taskContainerFunctions } from "./functions";
 
 import Task from "./scheme/Task";
 import TaskPrinter from "./TaskPrinter";
 
-import {
-  // taskName,
-  // taskDescription,
-  taskContainerActive,
-  taskContainerFinished,
-  // taskCategories,
-  // taskDeadline,
-  // taskImportance,
-} from "./variables";
-// import { initializeApp } from "firebase/app";
-import {
-  // getFirestore,
-  // collection,
-  onSnapshot,
-  // addDoc,
-} from "firebase/firestore";
+import { taskContainerActive, taskContainerFinished } from "./variables";
+
+import { onSnapshot } from "firebase/firestore";
 
 import { colRef } from "./db";
 
@@ -54,6 +35,7 @@ export const findTask = (taskId: string): Task | undefined => {
 
 export const creatingTask = function (task: Task): void {
   console.log(`creatingTask`);
+  console.log(taskInstances);
   const taskPrinter = new TaskPrinter(task);
   const newTaskPrint = taskPrinter.printHtml();
   const newTaskState = taskPrinter.addStateClass();

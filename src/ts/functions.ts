@@ -20,6 +20,7 @@ import {
   taskDeadline,
   textareaPlaceholder,
   taskImportance,
+  taskImportanceObj,
   validateBtn,
   validateModal,
   filterDefault,
@@ -29,25 +30,17 @@ import {
   filterTab2,
 } from "./variables";
 
-import {
-  // deleteDoc,
-  doc,
-  updateDoc,
-  // updateDoc
-} from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 
 import { taskInstances, findTask } from "./tasks";
 import Task from "./scheme/Task";
 import db, { updateTask, removeTask } from "./db";
 
 taskImportance.addEventListener("change", function () {
-  if (taskImportance.value === `1`) {
-    importanceRange.textContent = `Low`;
-  } else if (taskImportance.value === `2`) {
-    importanceRange.textContent = `Medium`;
-  } else {
-    importanceRange.textContent = `High`;
-  }
+  const importanceValue = +taskImportance.value;
+
+  // prettier-ignore
+  importanceRange.textContent = taskImportanceObj[importanceValue as keyof typeof taskImportanceObj];
 });
 
 validateBtn.addEventListener("click", function () {
@@ -107,6 +100,31 @@ export const currentTaskId = (event: any) => {
   return taskId;
 };
 
+export const countingDeadline = function (date: string): number {
+  if (date) {
+    const currentDate = new Date();
+    const targetDate = new Date(date);
+    const timeDifference = Number(targetDate) - Number(currentDate);
+    const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    return daysRemaining;
+  } else {
+    return NaN;
+  }
+};
+
+export const selectedCategory = function () {
+  const thisOption = +taskCategories.value;
+  return taskCategories.options[thisOption].textContent;
+};
+
+export const editingSelectedCategory = function () {
+  // taskInstance.category = 'Work'
+  // taskCategories -> 'Work'
+  // taskCategories.value = taskInstance.category;
+  // const event = new Event('change');
+  //   selectElement.dispatchEvent(event);
+};
+
 const fillingEditInputs = function (event: any) {
   const target = event.target;
 
@@ -118,7 +136,7 @@ const fillingEditInputs = function (event: any) {
   const taskInstance: Task | undefined = findTask(closestSingleTaskID);
 
   if (typeof taskInstance === "undefined") {
-    console.warn("dupa nie znaleziono");
+    console.warn("taskInstance is not found");
   } else {
     if (taskName) {
       taskName.value = taskInstance.name;
@@ -126,7 +144,8 @@ const fillingEditInputs = function (event: any) {
 
     if (taskDescription) {
       // prettier-ignore
-      taskDescription.value = (taskInstance as { description: string }).description;
+      // taskDescription.value = (taskInstance as { description: string }).description;
+      taskDescription.value = taskInstance.description;
       if (taskDescription.value == "") {
         textareaPlaceholder.style.display = "block";
       } else {
@@ -135,34 +154,24 @@ const fillingEditInputs = function (event: any) {
     }
 
     if (taskCategories) {
-      const selectedOption = (taskInstance as { category: string }).category;
-      const taskCategoriesOptions = taskCategories.options;
-      for (let i = 0; i < taskCategoriesOptions.length; i++) {
-        if (taskCategoriesOptions[i].text === selectedOption) {
-          const selectedOptionValue = taskCategoriesOptions[i].value;
-          taskCategories.selectedIndex = +selectedOptionValue;
-        }
+      console.log(taskInstance.category);
+
+      /*
+        editingSelectedCategory();
+        */
+
+      let selectedOption: string | null = taskInstance.category;
+      if (typeof selectedOption === "string") {
+        selectedOption = selectedCategory();
       }
     }
 
     if (taskImportance) {
-      taskImportance.value = (
-        taskInstance as { importance: string }
-      ).importance;
+      taskImportance.value = taskInstance.importance;
     }
 
     if (taskDeadline) {
-      const daysTillDeadline = (taskInstance as { deadline: number }).deadline;
-
-      if (isNaN(daysTillDeadline)) {
-        taskDeadline.value = "";
-      } else {
-        const currentDate = new Date();
-        // prettier-ignore
-        const dateOfDeadline = new Date(currentDate.setDate(currentDate.getDate() + daysTillDeadline));
-        const dataInputValue = dateOfDeadline.toISOString().split("T")[0];
-        taskDeadline.value = dataInputValue;
-      }
+      countingDeadline(taskDeadline.value);
     }
   }
 };
@@ -620,6 +629,8 @@ document.addEventListener("keydown", function (event) {
     filterModal.classList.remove("active");
   }
 });
+
+taskCategories.addEventListener("change", selectedCategory);
 
 taskDescription.addEventListener("input", placeholderDisplayChange);
 

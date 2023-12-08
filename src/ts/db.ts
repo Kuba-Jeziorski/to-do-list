@@ -1,29 +1,10 @@
-import {
-  createdDiv,
-  daysRemaining,
-  taskContainerFunctions,
-  // currentDayCheck,
-  summaryUpdate,
-  currentTaskId,
-} from "./functions";
-
 import Task from "./scheme/Task";
-import TaskPrinter from "./TaskPrinter";
 
-import {
-  taskName,
-  taskDescription,
-  taskContainerActive,
-  taskContainerFinished,
-  taskCategories,
-  taskDeadline,
-  taskImportance,
-} from "./variables";
 import { initializeApp } from "firebase/app";
+
 import {
   getFirestore,
   collection,
-  onSnapshot,
   deleteDoc,
   addDoc,
   doc,
@@ -48,13 +29,10 @@ const firebaseConfig = {
   appId,
 };
 
-// init firebase app
 initializeApp(firebaseConfig);
 
-// init services
 const db = getFirestore();
 
-// collection ref
 export const colRef = collection(db, "tasks");
 
 export const sendTask = (task: Task): void => {

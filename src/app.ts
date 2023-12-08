@@ -1,19 +1,23 @@
 import {
   clearModalInputs,
+  countingDeadline,
   taskUpdate,
   summaryUpdate,
   inputValidation,
   getOptionValue,
+  selectedCategory,
 } from "./ts/functions";
-// import { creatingTask } from "./ts/task";
+
 import {
   taskSubmit,
   taskName,
+  taskDeadline,
   taskDescription,
   taskImportance,
   modalBg,
   modalTitle,
   validateModal,
+  taskCategories,
 } from "./ts/variables";
 import { sendTask } from "./ts/db";
 import Task from "./ts/scheme/Task";
@@ -24,8 +28,8 @@ taskSubmit?.addEventListener("click", function (event) {
   if (modalTitle && modalTitle.textContent === "NEW TASK") {
     if (inputValidation()) {
       const newTask = new Task({
-        category: getOptionValue(),
-        deadline: 4,
+        category: selectedCategory(),
+        deadline: countingDeadline(taskDeadline.value),
         description: taskDescription.value,
         importance: taskImportance.value,
         name: taskName.value,

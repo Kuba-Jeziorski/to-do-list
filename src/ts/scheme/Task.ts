@@ -1,10 +1,4 @@
-import {
-  // createdDiv,
-  // daysRemaining,
-  // taskContainerFunctions,
-  currentDayCheck,
-  // summaryUpdate,
-} from "../functions";
+import { currentDayCheck } from "../functions";
 
 type DatabaseTask = {
   id: string;
