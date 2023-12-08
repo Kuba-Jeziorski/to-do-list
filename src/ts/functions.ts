@@ -117,13 +117,15 @@ export const selectedCategory = function () {
   return taskCategories.options[thisOption].textContent;
 };
 
-export const editingSelectedCategory = function () {
-  // taskInstance.category = 'Work'
-  // taskCategories -> 'Work'
-  // taskCategories.value = taskInstance.category;
-  // const event = new Event('change');
-  //   selectElement.dispatchEvent(event);
-};
+// export const editingSelectedCategory = function (taskIns: Task) {
+// this function should trigger while opening editing modal
+// taskInstance.category = 'Work'
+// taskCategories.value -> taskInstance.category ('Work')
+//   taskCategories.value = taskIns.category;
+//   const event = new Event("change");
+//   taskCategories.dispatchEvent(event);
+//   console.log(`editingSelectedCategory`);
+// };
 
 const fillingEditInputs = function (event: any) {
   const target = event.target;
@@ -143,8 +145,6 @@ const fillingEditInputs = function (event: any) {
     }
 
     if (taskDescription) {
-      // prettier-ignore
-      // taskDescription.value = (taskInstance as { description: string }).description;
       taskDescription.value = taskInstance.description;
       if (taskDescription.value == "") {
         textareaPlaceholder.style.display = "block";
@@ -154,15 +154,15 @@ const fillingEditInputs = function (event: any) {
     }
 
     if (taskCategories) {
-      console.log(taskInstance.category);
-
-      /*
-        editingSelectedCategory();
-        */
-
-      let selectedOption: string | null = taskInstance.category;
-      if (typeof selectedOption === "string") {
-        selectedOption = selectedCategory();
+      const selectOptions = [...taskCategories.options];
+      let currentCategory;
+      selectOptions.map((single, index) => {
+        if (single.textContent === taskInstance.category) {
+          currentCategory = index;
+        }
+      });
+      if (currentCategory) {
+        taskCategories.value = currentCategory;
       }
     }
 
@@ -182,14 +182,15 @@ const openEditModal = function (event: any): number {
   if (target.classList.contains("single-edit")) {
     modalOpening("EDITING TASK");
     fillingEditInputs(event);
+    // editingSelectedCategory();
 
     const closestSingleTask = target.closest(".single-task");
     const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
 
-    // const taskInstance = taskInstances[taskAttributeID(target)];
     //prettier-ignore
-    const taskInstance =findTask(closestSingleTaskID);
+    const taskInstance = findTask(closestSingleTaskID);
     if (typeof taskInstance !== "undefined") {
+      //
       editedTaskID = taskInstance.id;
       return editedTaskID;
     }

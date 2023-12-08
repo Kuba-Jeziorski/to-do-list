@@ -47,6 +47,7 @@ taskSubmit?.addEventListener("click", function (event) {
     }
   } else {
     if (inputValidation()) {
+      console.log(taskCategories.value);
       taskUpdate();
       clearModalInputs();
 
