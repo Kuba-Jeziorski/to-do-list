@@ -54,10 +54,11 @@ export const taskImportanceObj = {
   2: "Medium",
   3: "High",
 };
+
 // export const taskInstances: object[] = [];
 export const taskName = document.querySelector("#name") as HTMLInputElement;
 export const taskState = document.querySelector(".single-state") as HTMLElement;
-export const taskSubmit = document.querySelector("#submit") as HTMLElement;
+export const taskSubmit = document.querySelector("#submit") as HTMLInputElement;
 // prettier-ignore
 export const textareaPlaceholder = document.querySelector(".textarea-placeholder") as HTMLElement;
 

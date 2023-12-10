@@ -1,4 +1,4 @@
-import { createdDiv, taskContainerFunctions } from "./functions";
+import { createdDiv, taskContainerFunctions, summaryUpdate } from "./functions";
 
 import Task from "./scheme/Task";
 import TaskPrinter from "./TaskPrinter";
@@ -12,10 +12,14 @@ import { colRef } from "./db";
 export let taskInstances: Task[] = [];
 
 onSnapshot(colRef, (snapshot) => {
-  const taskWrapperTasks = document.querySelectorAll(
+  const taskWrapperActive = document.querySelectorAll(
     ".container-task-active .single-task"
   );
-  taskWrapperTasks.forEach((el) => el.remove());
+  const taskWrapperFinished = document.querySelectorAll(
+    ".container-task-finished .single-task"
+  );
+  taskWrapperActive.forEach((singleTask) => singleTask.remove());
+  taskWrapperFinished.forEach((singleTask) => singleTask.remove());
 
   taskInstances = snapshot.docs.map((doc) => {
     return new Task({
@@ -27,6 +31,10 @@ onSnapshot(colRef, (snapshot) => {
   taskInstances.forEach((task: Task) => {
     creatingTask(task);
   });
+
+  summaryUpdate();
+  console.log(`all taskInstances`);
+  console.log(taskInstances);
 });
 
 export const findTask = (taskId: string): Task | undefined => {
@@ -34,8 +42,6 @@ export const findTask = (taskId: string): Task | undefined => {
 };
 
 export const creatingTask = function (task: Task): void {
-  console.log(`creatingTask`);
-  console.log(taskInstances);
   const taskPrinter = new TaskPrinter(task);
   const newTaskPrint = taskPrinter.printHtml();
   const newTaskState = taskPrinter.addStateClass();

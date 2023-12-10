@@ -9,11 +9,14 @@ export default class TaskPrinter {
 
   printHtml(): string {
     const task = this.task;
+    const absoluteTaskDeadline = Math.abs(task.deadline);
+    const deadlineWhen = task.deadline >= 0 ? `till` : `past`;
+
     let returnDaysRemaining = "";
     if (!isNaN(task.deadline)) {
-      returnDaysRemaining = `<p class="single-days">${task.deadline} ${
+      returnDaysRemaining = `<p class="single-days">${absoluteTaskDeadline} ${
         Math.abs(task.deadline) === 1 ? "day" : "days"
-      } ${task.deadline >= 0 ? "till" : "past"} deadline</p>`;
+      } ${deadlineWhen} deadline</p>`;
     } else {
       returnDaysRemaining = `<p class="single-days">Deadline is not set</p>`;
     }

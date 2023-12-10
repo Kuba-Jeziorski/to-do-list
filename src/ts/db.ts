@@ -40,7 +40,6 @@ export const sendTask = (task: Task): void => {
 };
 
 export const removeTask = (taskId: string): void => {
-  console.log("taskId", taskId);
   const docRef = doc(db, "tasks", taskId);
   deleteDoc(docRef);
 };
@@ -49,9 +48,7 @@ export const updateTask = (task: Task) => {
   const dbId = task.id;
   if (!!dbId) {
     const docRef = doc(db, "tasks", dbId);
-    updateDoc(docRef, task.toUpdate()).then(() =>
-      console.log(`properties updated`)
-    );
+    updateDoc(docRef, task.toUpdate());
   }
 };
 

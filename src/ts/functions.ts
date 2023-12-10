@@ -28,6 +28,7 @@ import {
   filterSubmit,
   filterTab1,
   filterTab2,
+  taskSubmit,
 } from "./variables";
 
 import { doc, updateDoc } from "firebase/firestore";
@@ -36,22 +37,12 @@ import { taskInstances, findTask } from "./tasks";
 import Task from "./scheme/Task";
 import db, { updateTask, removeTask } from "./db";
 
-taskImportance.addEventListener("change", function () {
-  const importanceValue = +taskImportance.value;
+let editedTaskID: any;
 
-  // prettier-ignore
-  importanceRange.textContent = taskImportanceObj[importanceValue as keyof typeof taskImportanceObj];
-});
-
-validateBtn.addEventListener("click", function () {
-  validateModal.classList.remove("active");
-});
-
-const deleteExistingNode = function (parent: HTMLElement) {
-  console.log(`deleteExistingNode`);
-  const allItems = parent.querySelectorAll(".single-task");
-  const allItemsArr = [...allItems];
-  allItemsArr.map((item) => item.remove());
+const updateTaskState = function (docRef: any, newState: any) {
+  if (docRef) {
+    updateDoc(docRef, { state: newState });
+  }
 };
 
 const stateChange = function (event: any) {
@@ -64,32 +55,16 @@ const stateChange = function (event: any) {
     const properSingleTask = findTask(closestSingleTaskID);
 
     if (properSingleTask) {
-      if (properSingleTask.state === `active`) {
-        closestSingleTask.classList.add("finished");
+      const dbId = properSingleTask.id;
+      const docRef = dbId ? doc(db, "tasks", dbId) : null;
 
-        const dbId = properSingleTask.id;
-        if (!!dbId) {
-          const docRef = doc(db, "tasks", dbId);
-          updateDoc(docRef, {
-            state: `finished`,
-          });
-        }
+      if (properSingleTask.state === "active") {
+        closestSingleTask.classList.add("finished");
+        updateTaskState(docRef, "finished");
       } else {
         closestSingleTask.classList.remove("finished");
-
-        if (properSingleTask) {
-          const dbId = properSingleTask.id;
-          if (!!dbId) {
-            const docRef = doc(db, "tasks", dbId);
-            updateDoc(docRef, {
-              state: `active`,
-            });
-          }
-        }
+        updateTaskState(docRef, "active");
       }
-
-      deleteExistingNode(taskContainerFinished);
-      deleteExistingNode(taskContainerActive);
     }
   }
 };
@@ -117,15 +92,21 @@ export const selectedCategory = function () {
   return taskCategories.options[thisOption].textContent;
 };
 
-// export const editingSelectedCategory = function (taskIns: Task) {
-// this function should trigger while opening editing modal
-// taskInstance.category = 'Work'
-// taskCategories.value -> taskInstance.category ('Work')
-//   taskCategories.value = taskIns.category;
-//   const event = new Event("change");
-//   taskCategories.dispatchEvent(event);
-//   console.log(`editingSelectedCategory`);
-// };
+export const dynamicImportanceClass = function (target: any, forbidden: any) {
+  const importanceValue = +taskImportance.value;
+  const importanceName = forbidden[importanceValue as keyof typeof forbidden];
+  target.textContent = importanceName;
+
+  const forbiddenClasses: string[] = [];
+  for (const [_, value] of Object.entries(forbidden)) {
+    if (value && typeof value === "string") {
+      forbiddenClasses.push(value.toLocaleLowerCase());
+    }
+  }
+
+  forbiddenClasses.map((singleClass) => target.classList.remove(singleClass));
+  target.classList.add(importanceName.toLowerCase());
+};
 
 const fillingEditInputs = function (event: any) {
   const target = event.target;
@@ -133,13 +114,9 @@ const fillingEditInputs = function (event: any) {
   const closestSingleTask = target.closest(".single-task");
   const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
 
-  console.log("closestSingleTaskID", closestSingleTaskID);
-  //prettier-ignore
   const taskInstance: Task | undefined = findTask(closestSingleTaskID);
 
-  if (typeof taskInstance === "undefined") {
-    console.warn("taskInstance is not found");
-  } else {
+  if (typeof taskInstance !== "undefined") {
     if (taskName) {
       taskName.value = taskInstance.name;
     }
@@ -168,21 +145,33 @@ const fillingEditInputs = function (event: any) {
 
     if (taskImportance) {
       taskImportance.value = taskInstance.importance;
+      const importanceName =
+        taskImportanceObj[
+          +taskImportance.value as keyof typeof taskImportanceObj
+        ];
+      importanceRange.textContent = importanceName;
+
+      dynamicImportanceClass(importanceRange, taskImportanceObj);
     }
 
     if (taskDeadline) {
       countingDeadline(taskDeadline.value);
+      taskDeadline.value = taskInstance.dateOfDeadline;
     }
   }
 };
 
-let editedTaskID: any;
-const openEditModal = function (event: any): number {
+export const modalSubmitValue = function (name: string) {
+  taskSubmit.value = name;
+};
+
+const openEditModal = function (event: any) {
   const target = event.target;
   if (target.classList.contains("single-edit")) {
     modalOpening("EDITING TASK");
+    modalSubmitValue("UPDATE");
+
     fillingEditInputs(event);
-    // editingSelectedCategory();
 
     const closestSingleTask = target.closest(".single-task");
     const closestSingleTaskID = closestSingleTask.getAttribute("data-task-id");
@@ -190,12 +179,10 @@ const openEditModal = function (event: any): number {
     //prettier-ignore
     const taskInstance = findTask(closestSingleTaskID);
     if (typeof taskInstance !== "undefined") {
-      //
       editedTaskID = taskInstance.id;
       return editedTaskID;
     }
   }
-  return 1;
 };
 
 const taskDelete = function (event: any) {
@@ -203,27 +190,13 @@ const taskDelete = function (event: any) {
   if (!target.classList.contains("single-btn")) return;
   const parent = target.closest(".single-task");
   const parentId = parent.getAttribute("data-task-id");
-  console.log(`parent id: ${parentId}`);
-  const btnNode = document.querySelectorAll(".single-btn");
-  const btnNodeArr = [...btnNode];
-  const clickedElement = btnNodeArr.indexOf(target);
 
   deleteModal?.classList.add("active");
 
   deleteModalButtons?.addEventListener("click", function (event: any) {
     const target = event.target;
-    console.log(`Multiple executions - why?`);
 
-    if (target.id === "delete-yes") {
-      parent.remove();
-      removeTask(parentId);
-
-      console.log(
-        `You deleted task[${clickedElement + 1}] of ${btnNodeArr.length}. ${
-          btnNodeArr.length - 1
-        } tasks left.`
-      );
-    }
+    if (target.id === "delete-yes") removeTask(parentId);
     deleteModal?.classList.remove("active");
   });
 };
@@ -246,20 +219,22 @@ export const currentDayCheck = function (): string {
   const currentMonth = String(currentDate.getMonth() + 1).padStart(2, "0");
   const currentYear = String(currentDate.getFullYear());
 
-  const formattedDate = `${currentDay}.${currentMonth}.${currentYear}`;
+  const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
   return formattedDate;
 };
 
 export const summaryUpdate = function () {
-  const activeTasksDisplay = document.querySelector("span.act")!;
-  const finishedTasksDisplay = document.querySelector("span.fin")!;
-  const allTasksDisplay = document.querySelector("span.all")!;
+  const activeTasksDisplay = document.querySelector("span.act");
+  const finishedTasksDisplay = document.querySelector("span.fin");
+  const allTasksDisplay = document.querySelector("span.all");
 
-  // prettier-ignore
-  const activeTasksAmount = document.querySelectorAll("#container-active .single-task");
+  const activeTasksAmount = document.querySelectorAll(
+    "#container-active .single-task"
+  );
 
-  // prettier-ignore
-  const finishedTasksAmount = document.querySelectorAll("#container-finished .single-task");
+  const finishedTasksAmount = document.querySelectorAll(
+    "#container-finished .single-task"
+  );
 
   if (activeTasksDisplay) {
     activeTasksDisplay.textContent = activeTasksAmount.length.toString();
@@ -270,8 +245,9 @@ export const summaryUpdate = function () {
   }
 
   if (allTasksDisplay) {
-    // prettier-ignore
-    allTasksDisplay.textContent = (activeTasksAmount.length + finishedTasksAmount.length).toString();
+    allTasksDisplay.textContent = (
+      activeTasksAmount.length + finishedTasksAmount.length
+    ).toString();
   }
 };
 
@@ -295,46 +271,29 @@ export const clearModalInputs = function () {
     if (
       (input as HTMLInputElement).type === "text" ||
       (input as HTMLInputElement).type === "date"
-    ) {
+    )
       (input as HTMLInputElement).value = "";
-    }
   });
   (modalTextarea as HTMLTextAreaElement).value = "";
 
   taskCategories.selectedIndex = 0;
 
   taskImportance.value = `2`;
-  importanceRange.innerText = "Medium";
+  importanceRange.innerText = `Medium`;
 };
 
 export const inputValidation = function () {
   const validationArray: number[] = [];
 
-  if (taskName.value === ``) {
-    validationArray.push(0);
-  } else {
-    validationArray.push(1);
-  }
-
-  if (taskDescription.value === ``) {
-    validationArray.push(0);
-  } else {
-    validationArray.push(1);
-  }
-
-  // prettier-ignore
-  if (taskCategories.options[taskCategories.selectedIndex].text === `Select task category*:`) {
-    validationArray.push(0);
-  } else {
-    validationArray.push(1);
-  }
+  validationArray.push(taskName.value === `` ? 0 : 1);
+  validationArray.push(taskDescription.value === `` ? 0 : 1);
+  //prettier-ignore
+  validationArray.push(taskCategories.options[taskCategories.selectedIndex].value === "0" ? 0 : 1);
 
   return !validationArray.includes(0);
 };
 
 export const daysRemaining = function (date: any) {
-  console.log(`this date:`);
-  console.log(date);
   const futureDateString = date.value;
 
   const dateComponents = futureDateString.split("-");
@@ -347,7 +306,6 @@ export const daysRemaining = function (date: any) {
 
   const timeDiff = futureDate.getTime() - currentDate.getTime();
   const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
   return daysRemaining;
 };
 
@@ -360,11 +318,8 @@ export const modalOpening = function (title: string) {
 
 export const placeholderDisplayChange = function () {
   if (textareaPlaceholder) {
-    if (taskDescription.value.length > 0) {
-      textareaPlaceholder.style.display = "none";
-    } else {
-      textareaPlaceholder.style.display = "block";
-    }
+    textareaPlaceholder.style.display =
+      taskDescription.value.length > 0 ? "none" : "block";
   }
 };
 
@@ -382,15 +337,13 @@ export const taskUpdate = function () {
   console.log(`Task changed from:`);
   console.log(taskInstance);
 
-  // taskInstancs.name = taskName.value;
   taskInstance.name = taskName.value;
-  // prettier-ignore
   taskInstance.description = taskDescription.value;
   taskInstance.category =
     taskCategories.options[taskCategories.selectedIndex].text;
   taskInstance.deadline = daysRemaining(taskDeadline);
-  // prettier-ignore
   taskInstance.importance = taskImportance.value;
+  taskInstance.dateOfDeadline = taskDeadline.value;
 
   updateTask(taskInstance);
 
@@ -407,33 +360,62 @@ export const taskUpdate = function () {
   let currentTaskCategory = currentTask?.querySelector(".single-category") as HTMLDivElement;
   // prettier-ignore
   let currentTaskDescription = currentTask?.querySelector(".single-description") as HTMLDivElement;
+  // prettier-ignore
 
   if (!isNaN(daysRemaining(taskDeadline))) {
-    currentTaskDays.textContent = `${daysRemaining(taskDeadline).toString()} ${
+    const deadlineWhen = daysRemaining(taskDeadline) >= 0 ? `till` : `past`;
+    const absoluteDaysRemaining = Math.abs(daysRemaining(taskDeadline));
+    currentTaskDays.textContent = `${absoluteDaysRemaining.toString()} ${
       Math.abs(daysRemaining(taskDeadline)) === 1 ? "day" : "days"
-    } ${daysRemaining(taskDeadline) >= 0 ? "till" : "past"} deadline`;
+    } ${deadlineWhen} deadline`;
   }
 
   const nameImportance = document.querySelector(".single-task .single-name");
-  const importanceStates = ["low", "medium", "high"];
-  importanceStates.map((singleImportance) =>
-    nameImportance?.classList.remove(singleImportance)
-  );
-  let importanceNameClass = ``;
-  if (taskImportance.value === `1`) {
-    importanceNameClass = `low`;
-  } else if (taskImportance.value === `2`) {
-    importanceNameClass = `medium`;
-  } else {
-    importanceNameClass = `high`;
+  const forbiddenClasses: string[] = [];
+  for (const [_, value] of Object.entries(taskImportanceObj)) {
+    if (value && typeof value === "string") {
+      forbiddenClasses.push(value.toLocaleLowerCase());
+    }
   }
-  nameImportance?.classList.add(importanceNameClass);
+
+  forbiddenClasses.map((singleClass) =>
+    nameImportance?.classList.remove(singleClass)
+  );
+
+  const importanceName =
+    taskImportanceObj[+taskImportance.value as keyof typeof taskImportanceObj];
+
+  nameImportance?.classList.add(importanceName);
 
   currentTaskName.textContent = taskName.value;
   currentTaskCategory.textContent =
     taskCategories.options[taskCategories.selectedIndex].text;
   currentTaskDescription.textContent = taskDescription.value;
 };
+// end here
+const closeModalByOutsideClick = function (event: any) {
+  const target = event.target;
+  if (
+    modalBg?.classList.contains("active") &&
+    target.classList.contains("modal-bg")
+  ) {
+    modalBg.classList.remove("active");
+    clearModalInputs();
+  }
+};
+
+validateBtn.addEventListener("click", function () {
+  validateModal.classList.remove("active");
+});
+
+taskImportance.addEventListener("change", function () {
+  const importanceValue = +taskImportance.value;
+
+  // prettier-ignore
+  importanceRange.textContent = taskImportanceObj[importanceValue as keyof typeof taskImportanceObj];
+
+  dynamicImportanceClass(importanceRange, taskImportanceObj);
+});
 
 let filteredArray: any[] = [];
 filterActiveBtn.addEventListener("click", function (): any[] {
@@ -495,122 +477,125 @@ filterDefault.addEventListener("click", function () {
   }
 });
 
-filterSubmit.addEventListener("click", function () {
-  console.log(`filterSubmit tasks`);
-  console.log(filteredArray);
+// filterSubmit.addEventListener("click", function () {
+//   console.log(`filterSubmit tasks`);
+//   console.log(filteredArray);
 
-  // filter tab
-  if (filterTab1.checked) {
-    const checkboxesNamesArray: string[] = [];
-    filterTabCheckboxes.forEach((singleCheckbox) => {
-      if ((singleCheckbox as HTMLInputElement).checked) {
-        checkboxesNamesArray.push((singleCheckbox as HTMLInputElement).name);
-      }
-    });
+//   // filter tab
+//   if (filterTab1.checked) {
+//     const checkboxesNamesArray: string[] = [];
+//     filterTabCheckboxes.forEach((singleCheckbox) => {
+//       if ((singleCheckbox as HTMLInputElement).checked) {
+//         checkboxesNamesArray.push((singleCheckbox as HTMLInputElement).name);
+//       }
+//     });
 
-    const importanceArray: string[] = [];
-    const categoryArray: string[] = [];
-    const deadlineArray: string[] = [];
+//     const importanceArray: string[] = [];
+//     const categoryArray: string[] = [];
+//     const deadlineArray: string[] = [];
 
-    console.log(`checkboxesNamesArray`);
-    console.log(checkboxesNamesArray);
+//     console.log(`checkboxesNamesArray`);
+//     console.log(checkboxesNamesArray);
 
-    checkboxesNamesArray.map((singleName) => {
-      console.log(`singleName`);
-      console.log(singleName);
-      if (singleName.includes("importance")) {
-        importanceArray.push(singleName);
-      } else if (singleName.includes("category")) {
-        categoryArray.push(singleName);
-      } else {
-        deadlineArray.push(singleName);
-      }
-    });
-    console.log(`filteredArray`);
-    console.log(filteredArray);
-    if (checkboxesNamesArray.length > 0) {
-      filteredArray.map((singleTask) => {
-        let thisTaskID = singleTask.databaseId;
-        //prettier-ignore
-        let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
-        //prettier-ignore
-        const thisTaskImportance = singleTask.importance;
-        const thisTaskCategory = singleTask.category;
-        //prettier-ignore
-        const thisTaskDeadline = Math.abs(singleTask.deadline);
+//     checkboxesNamesArray.map((singleName) => {
+//       console.log(`singleName`);
+//       console.log(singleName);
+//       if (singleName.includes("importance")) {
+//         importanceArray.push(singleName);
+//       } else if (singleName.includes("category")) {
+//         categoryArray.push(singleName);
+//       } else {
+//         deadlineArray.push(singleName);
+//       }
+//     });
+//     console.log(`filteredArray`);
+//     console.log(filteredArray);
+//     if (checkboxesNamesArray.length > 0) {
+//       filteredArray.map((singleTask) => {
+//         let thisTaskID = singleTask.databaseId;
+//         //prettier-ignore
+//         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
+//         //prettier-ignore
+//         const thisTaskImportance = singleTask.importance;
+//         const thisTaskCategory = singleTask.category;
+//         //prettier-ignore
+//         const thisTaskDeadline = Math.abs(singleTask.deadline);
 
-        (thisTaskDiv as HTMLElement).style.display = "none";
+//         (thisTaskDiv as HTMLElement).style.display = "none";
 
-        //prettier-ignore
-        const selectedImportance = importanceArray.map(item => item.replace('importance-', ''));
-        //prettier-ignore
-        const selectedCategories = categoryArray.map(item => item.replace('category-', ''));
-        //prettier-ignore
-        const selectedDeadline = deadlineArray.map(item => item.replace("deadline-", ""));
+//         //prettier-ignore
+//         const selectedImportance = importanceArray.map(item => item.replace('importance-', ''));
+//         //prettier-ignore
+//         const selectedCategories = categoryArray.map(item => item.replace('category-', ''));
+//         //prettier-ignore
+//         const selectedDeadline = deadlineArray.map(item => item.replace("deadline-", ""));
 
-        //prettier-ignore
-        const importanceMatch = selectedImportance.length === 0 || selectedImportance.includes(`${thisTaskImportance}`);
-        //prettier-ignore
-        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(`${thisTaskCategory}`);
-        //prettier-ignore
-        const deadlineMatch = selectedDeadline.length === 0 || thisTaskDeadline <= +selectedDeadline[0];
+//         //prettier-ignore
+//         const importanceMatch = selectedImportance.length === 0 || selectedImportance.includes(`${thisTaskImportance}`);
+//         //prettier-ignore
+//         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(`${thisTaskCategory}`);
+//         //prettier-ignore
+//         const deadlineMatch = selectedDeadline.length === 0 || thisTaskDeadline <= +selectedDeadline[0];
 
-        if (importanceMatch && categoryMatch && deadlineMatch) {
-          thisTaskDiv.style.display = "flex";
-        }
-      });
-    } else {
-      filteredArray.map((singleTask) => {
-        let thisTaskID = singleTask.databaseId;
-        //prettier-ignore
-        let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
+//         if (importanceMatch && categoryMatch && deadlineMatch) {
+//           thisTaskDiv.style.display = "flex";
+//         }
+//       });
+//     } else {
+//       filteredArray.map((singleTask) => {
+//         let thisTaskID = singleTask.databaseId;
+//         //prettier-ignore
+//         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
 
-        (thisTaskDiv as HTMLElement).style.display = "flex";
-      });
-    }
-  }
+//         (thisTaskDiv as HTMLElement).style.display = "flex";
+//       });
+//     }
+//   }
 
-  // sort tab
-  if (filterTab2.checked) {
-    //prettier-ignore
-    const allRadioInputs = document.querySelectorAll('#tab-sort input[type="radio"]');
+//   // sort tab
+//   if (filterTab2.checked) {
+//     //prettier-ignore
+//     const allRadioInputs = document.querySelectorAll('#tab-sort input[type="radio"]');
 
-    let sortBy: string = "";
-    allRadioInputs.forEach((singleRadio) => {
-      if ((singleRadio as HTMLInputElement).checked) {
-        sortBy = (singleRadio as HTMLInputElement).getAttribute("category")!;
-      }
-    });
-    const sortCategory = sortBy.replace(/-(1|2)$/, "");
-    const sortType = sortBy.slice(-1);
+//     let sortBy: string = "";
+//     allRadioInputs.forEach((singleRadio) => {
+//       if ((singleRadio as HTMLInputElement).checked) {
+//         sortBy = (singleRadio as HTMLInputElement).getAttribute("category")!;
+//       }
+//     });
+//     const sortCategory = sortBy.replace(/-(1|2)$/, "");
+//     const sortType = sortBy.slice(-1);
 
-    const filteredArrayCopy = [...filteredArray];
-    let sortedArray: Task[];
-    if (sortType == `1`) {
-      sortedArray = filteredArrayCopy.sort((first, last) =>
-        //prettier-ignore
-        last[sortCategory] < first[sortCategory] ? 1 : last[sortCategory] > first[sortCategory] ? -1 : 0
-      );
-    } else {
-      sortedArray = filteredArrayCopy.sort((first, last) =>
-        //prettier-ignore
-        first[sortCategory] < last[sortCategory] ? 1 : first[sortCategory] > last[sortCategory] ? -1 : 0
-      );
-    }
+//     const filteredArrayCopy = [...filteredArray];
+//     let sortedArray: Task[];
+//     if (sortType == `1`) {
+//       sortedArray = filteredArrayCopy.sort((first, last) =>
+//         //prettier-ignore
+//         last[sortCategory] < first[sortCategory] ? 1 : last[sortCategory] > first[sortCategory] ? -1 : 0
+//       );
+//     } else {
+//       sortedArray = filteredArrayCopy.sort((first, last) =>
+//         //prettier-ignore
+//         first[sortCategory] < last[sortCategory] ? 1 : first[sortCategory] > last[sortCategory] ? -1 : 0
+//       );
+//     }
 
-    sortedArray.map((singleTask: Task, singleIndex) => {
-      //prettier-ignore
-      const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.databaseId}"]`)!;
+//     sortedArray.map((singleTask: Task, singleIndex) => {
+//       //prettier-ignore
+//       const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.databaseId}"]`)!;
 
-      //prettier-ignore
-      (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
-    });
-  }
+//       //prettier-ignore
+//       (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
+//     });
+//   }
 
-  filterModal.classList.remove("active");
+//   filterModal.classList.remove("active");
+// });
+
+modalOpen?.addEventListener("click", () => {
+  modalOpening("NEW TASK");
+  modalSubmitValue("CREATE");
 });
-
-modalOpen?.addEventListener("click", () => modalOpening("NEW TASK"));
 
 modalClose?.addEventListener("click", function () {
   modalBg?.classList.remove("active");
@@ -631,10 +616,8 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
+document.addEventListener("click", closeModalByOutsideClick);
+
 taskCategories.addEventListener("change", selectedCategory);
 
 taskDescription.addEventListener("input", placeholderDisplayChange);
-
-export const getOptionValue = () => {
-  return "test-category";
-};

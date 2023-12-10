@@ -4,6 +4,7 @@ type DatabaseTask = {
   id: string;
   category: string;
   currentDate: string;
+  dateOfDeadline: string;
   deadline: number;
   description: string;
   importance: string;
@@ -16,18 +17,19 @@ export default class Task {
   id: string | null;
   name: string;
   description: string;
+  dateOfDeadline: string;
   deadline: number;
   category: string;
   currentDate: string;
   importance: string;
   state: string;
   timeStamp: number;
-  databaseId?: string;
 
   constructor(taskCreator: DatabaseTask | any) {
     this.name = taskCreator.name;
     this.description = taskCreator.description;
     this.deadline = taskCreator.deadline;
+    this.dateOfDeadline = taskCreator.dateOfDeadline;
     this.category = taskCreator.category;
     this.importance = taskCreator.importance;
 
@@ -39,12 +41,13 @@ export default class Task {
 
   toSave() {
     return {
-      category: this.category,
-      currentDate: this.currentDate,
-      deadline: this.deadline,
-      description: this.description,
-      importance: this.importance,
       name: this.name,
+      description: this.description,
+      category: this.category,
+      deadline: this.deadline,
+      dateOfDeadline: this.dateOfDeadline,
+      importance: this.importance,
+      currentDate: this.currentDate,
       state: this.state,
       timeStamp: this.timeStamp,
     };
@@ -56,6 +59,7 @@ export default class Task {
       description: this.description,
       category: this.category,
       deadline: this.deadline,
+      dateOfDeadline: this.dateOfDeadline,
       importance: this.importance,
     };
   }

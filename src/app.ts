@@ -2,9 +2,9 @@ import {
   clearModalInputs,
   countingDeadline,
   taskUpdate,
-  summaryUpdate,
+  // summaryUpdate,
   inputValidation,
-  getOptionValue,
+  // getOptionValue,
   selectedCategory,
 } from "./ts/functions";
 
@@ -30,13 +30,12 @@ taskSubmit?.addEventListener("click", function (event) {
       const newTask = new Task({
         category: selectedCategory(),
         deadline: countingDeadline(taskDeadline.value),
+        dateOfDeadline: taskDeadline.value,
         description: taskDescription.value,
         importance: taskImportance.value,
         name: taskName.value,
       });
       sendTask(newTask);
-      summaryUpdate();
-
       clearModalInputs();
 
       if (modalBg?.classList.contains("active")) {
@@ -47,7 +46,6 @@ taskSubmit?.addEventListener("click", function (event) {
     }
   } else {
     if (inputValidation()) {
-      console.log(taskCategories.value);
       taskUpdate();
       clearModalInputs();
 
