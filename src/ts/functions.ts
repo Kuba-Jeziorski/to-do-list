@@ -392,7 +392,7 @@ export const taskUpdate = function () {
     taskCategories.options[taskCategories.selectedIndex].text;
   currentTaskDescription.textContent = taskDescription.value;
 };
-// end here
+
 const closeModalByOutsideClick = function (event: any) {
   const target = event.target;
   if (
@@ -410,18 +410,19 @@ validateBtn.addEventListener("click", function () {
 
 taskImportance.addEventListener("change", function () {
   const importanceValue = +taskImportance.value;
+  const importanceName =
+    taskImportanceObj[importanceValue as keyof typeof taskImportanceObj];
 
   // prettier-ignore
-  importanceRange.textContent = taskImportanceObj[importanceValue as keyof typeof taskImportanceObj];
+  importanceRange.textContent = importanceName;
 
   dynamicImportanceClass(importanceRange, taskImportanceObj);
 });
 
 let filteredArray: any[] = [];
 filterActiveBtn.addEventListener("click", function (): any[] {
-  filterModal.classList.add("active");
-  // prevent from adding duplicated items
   filteredArray = [];
+  filterModal.classList.add("active");
 
   taskInstances.forEach((singleInstance) => {
     if (singleInstance.state === `active`) {
@@ -447,7 +448,6 @@ filterFinishedBtn.addEventListener("click", function () {
     }
   });
 
-  console.log(`Amount of all items: ${taskInstances.length}`);
   console.log(
     `Amount of filtered (finished state) items: ${filteredArray.length}`
   );
@@ -456,7 +456,7 @@ filterFinishedBtn.addEventListener("click", function () {
 });
 
 filterClose?.addEventListener("click", function () {
-  console.log(`close clicked`);
+  console.log(`filter's close clicked`);
   filterModal.classList.remove("active");
 });
 
@@ -477,120 +477,114 @@ filterDefault.addEventListener("click", function () {
   }
 });
 
-// filterSubmit.addEventListener("click", function () {
-//   console.log(`filterSubmit tasks`);
-//   console.log(filteredArray);
+filterSubmit.addEventListener("click", function () {
+  console.log(`filterSubmit tasks`);
+  console.log(filteredArray);
 
-//   // filter tab
-//   if (filterTab1.checked) {
-//     const checkboxesNamesArray: string[] = [];
-//     filterTabCheckboxes.forEach((singleCheckbox) => {
-//       if ((singleCheckbox as HTMLInputElement).checked) {
-//         checkboxesNamesArray.push((singleCheckbox as HTMLInputElement).name);
-//       }
-//     });
+  // filter tab
+  if (filterTab1.checked) {
+    const checkboxesNamesArray: string[] = [];
+    filterTabCheckboxes.forEach((singleCheckbox) => {
+      if ((singleCheckbox as HTMLInputElement).checked) {
+        checkboxesNamesArray.push((singleCheckbox as HTMLInputElement).name);
+      }
+    });
 
-//     const importanceArray: string[] = [];
-//     const categoryArray: string[] = [];
-//     const deadlineArray: string[] = [];
+    const importanceArray: string[] = [];
+    const categoryArray: string[] = [];
+    const deadlineArray: string[] = [];
 
-//     console.log(`checkboxesNamesArray`);
-//     console.log(checkboxesNamesArray);
+    checkboxesNamesArray.map((singleName) => {
+      if (singleName.includes("importance")) {
+        importanceArray.push(singleName);
+      } else if (singleName.includes("category")) {
+        categoryArray.push(singleName);
+      } else {
+        deadlineArray.push(singleName);
+      }
+    });
+    if (checkboxesNamesArray.length > 0) {
+      filteredArray.map((singleTask: Task) => {
+        let thisTaskID = singleTask.id;
+        //prettier-ignore
+        let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
+        //prettier-ignore
+        const thisTaskImportance = singleTask.importance;
+        const thisTaskCategory = singleTask.category;
+        //prettier-ignore
+        // const thisTaskDeadline = Math.abs(singleTask.deadline);
+        const thisTaskDeadline = singleTask.deadline;
 
-//     checkboxesNamesArray.map((singleName) => {
-//       console.log(`singleName`);
-//       console.log(singleName);
-//       if (singleName.includes("importance")) {
-//         importanceArray.push(singleName);
-//       } else if (singleName.includes("category")) {
-//         categoryArray.push(singleName);
-//       } else {
-//         deadlineArray.push(singleName);
-//       }
-//     });
-//     console.log(`filteredArray`);
-//     console.log(filteredArray);
-//     if (checkboxesNamesArray.length > 0) {
-//       filteredArray.map((singleTask) => {
-//         let thisTaskID = singleTask.databaseId;
-//         //prettier-ignore
-//         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
-//         //prettier-ignore
-//         const thisTaskImportance = singleTask.importance;
-//         const thisTaskCategory = singleTask.category;
-//         //prettier-ignore
-//         const thisTaskDeadline = Math.abs(singleTask.deadline);
+        (thisTaskDiv as HTMLElement).classList.add("display-none");
 
-//         (thisTaskDiv as HTMLElement).style.display = "none";
+        //prettier-ignore
+        const selectedImportance = importanceArray.map(item => item.replace('importance-', ''));
+        //prettier-ignore
+        const selectedCategories = categoryArray.map(item => item.replace('category-', ''));
+        //prettier-ignore
+        const selectedDeadline = deadlineArray.map(item => item.replace("deadline-", ""));
 
-//         //prettier-ignore
-//         const selectedImportance = importanceArray.map(item => item.replace('importance-', ''));
-//         //prettier-ignore
-//         const selectedCategories = categoryArray.map(item => item.replace('category-', ''));
-//         //prettier-ignore
-//         const selectedDeadline = deadlineArray.map(item => item.replace("deadline-", ""));
+        //prettier-ignore
+        const importanceMatch = selectedImportance.length === 0 || selectedImportance.includes(`${thisTaskImportance}`);
+        //prettier-ignore
+        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(`${thisTaskCategory}`);
+        //prettier-ignore
+        const deadlineMatch = selectedDeadline.length === 0 || thisTaskDeadline <= +selectedDeadline[0];
 
-//         //prettier-ignore
-//         const importanceMatch = selectedImportance.length === 0 || selectedImportance.includes(`${thisTaskImportance}`);
-//         //prettier-ignore
-//         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(`${thisTaskCategory}`);
-//         //prettier-ignore
-//         const deadlineMatch = selectedDeadline.length === 0 || thisTaskDeadline <= +selectedDeadline[0];
+        if (importanceMatch && categoryMatch && deadlineMatch) {
+          thisTaskDiv.classList.remove("display-none");
+        }
+      });
+    } else {
+      filteredArray.map((singleTask) => {
+        let thisTaskID = singleTask.id;
+        //prettier-ignore
+        let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
 
-//         if (importanceMatch && categoryMatch && deadlineMatch) {
-//           thisTaskDiv.style.display = "flex";
-//         }
-//       });
-//     } else {
-//       filteredArray.map((singleTask) => {
-//         let thisTaskID = singleTask.databaseId;
-//         //prettier-ignore
-//         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
+        (thisTaskDiv as HTMLElement).classList.remove("display-none");
+      });
+    }
+  }
 
-//         (thisTaskDiv as HTMLElement).style.display = "flex";
-//       });
-//     }
-//   }
+  // sort tab
+  if (filterTab2.checked) {
+    //prettier-ignore
+    const allRadioInputs = document.querySelectorAll('#tab-sort input[type="radio"]');
 
-//   // sort tab
-//   if (filterTab2.checked) {
-//     //prettier-ignore
-//     const allRadioInputs = document.querySelectorAll('#tab-sort input[type="radio"]');
+    let sortBy: string = "";
+    allRadioInputs.forEach((singleRadio) => {
+      if ((singleRadio as HTMLInputElement).checked) {
+        sortBy = (singleRadio as HTMLInputElement).getAttribute("category")!;
+      }
+    });
+    const sortCategory = sortBy.replace(/-(1|2)$/, "");
+    const sortType = sortBy.slice(-1);
 
-//     let sortBy: string = "";
-//     allRadioInputs.forEach((singleRadio) => {
-//       if ((singleRadio as HTMLInputElement).checked) {
-//         sortBy = (singleRadio as HTMLInputElement).getAttribute("category")!;
-//       }
-//     });
-//     const sortCategory = sortBy.replace(/-(1|2)$/, "");
-//     const sortType = sortBy.slice(-1);
+    const filteredArrayCopy = [...filteredArray];
+    let sortedArray: Task[];
+    if (sortType == `1`) {
+      sortedArray = filteredArrayCopy.sort((first, last) =>
+        //prettier-ignore
+        last[sortCategory] < first[sortCategory] ? 1 : last[sortCategory] > first[sortCategory] ? -1 : 0
+      );
+    } else {
+      sortedArray = filteredArrayCopy.sort((first, last) =>
+        //prettier-ignore
+        first[sortCategory] < last[sortCategory] ? 1 : first[sortCategory] > last[sortCategory] ? -1 : 0
+      );
+    }
 
-//     const filteredArrayCopy = [...filteredArray];
-//     let sortedArray: Task[];
-//     if (sortType == `1`) {
-//       sortedArray = filteredArrayCopy.sort((first, last) =>
-//         //prettier-ignore
-//         last[sortCategory] < first[sortCategory] ? 1 : last[sortCategory] > first[sortCategory] ? -1 : 0
-//       );
-//     } else {
-//       sortedArray = filteredArrayCopy.sort((first, last) =>
-//         //prettier-ignore
-//         first[sortCategory] < last[sortCategory] ? 1 : first[sortCategory] > last[sortCategory] ? -1 : 0
-//       );
-//     }
+    sortedArray.map((singleTask: Task, singleIndex) => {
+      //prettier-ignore
+      const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.id}"]`)!;
 
-//     sortedArray.map((singleTask: Task, singleIndex) => {
-//       //prettier-ignore
-//       const singleTaskDOM = document.querySelector(`.single-task[data-task-id="${singleTask.databaseId}"]`)!;
+      //prettier-ignore
+      (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
+    });
+  }
 
-//       //prettier-ignore
-//       (singleTaskDOM as HTMLElement).style.order = `${singleIndex - sortedArray.length}`;
-//     });
-//   }
-
-//   filterModal.classList.remove("active");
-// });
+  filterModal.classList.remove("active");
+});
 
 modalOpen?.addEventListener("click", () => {
   modalOpening("NEW TASK");
