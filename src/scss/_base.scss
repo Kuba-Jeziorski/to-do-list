@@ -79,7 +79,6 @@ select {
   color: $secondary;
   width: 100%;
   padding: 0 0 5px;
-  // appearance: none;
   border: none;
   background: transparent;
   outline: transparent;
@@ -256,15 +255,15 @@ input {
 
 #importance-range {
   &.low {
-    color: lime;
+    color: $importance-low;
   }
 
   &.medium {
-    color: yellow;
+    color: $importance-medium;
   }
 
   &.high {
-    color: red;
+    color: $importance-high;
   }
 }
 
@@ -438,28 +437,29 @@ input {
     &::before {
       position: absolute;
       content: "";
-      top: 15px;
-      left: -15px;
       width: 10px;
-      height: 10px;
+      aspect-ratio: 1;
+      top: 50%;
+      left: -18px;
+      translate: 0 -50%;
       border-radius: 50%;
     }
 
     &.high {
       &::before {
-        background: red;
+        background: $importance-high;
       }
     }
 
     &.medium {
       &::before {
-        background: yellow;
+        background: $importance-medium;
       }
     }
 
     &.low {
       &::before {
-        background: lime;
+        background: $importance-low;
       }
     }
   }

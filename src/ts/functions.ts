@@ -39,6 +39,8 @@ import db, { updateTask, removeTask } from "./db";
 
 let editedTaskID: any;
 
+let filteredArray: Task[] = [];
+
 const updateTaskState = function (docRef: any, newState: any) {
   if (docRef) {
     updateDoc(docRef, { state: newState });
@@ -69,11 +71,12 @@ const stateChange = function (event: any) {
   }
 };
 
-export const currentTaskId = (event: any) => {
-  const target = event.target;
-  const taskId = target.getAttribute("data-task-id");
-  return taskId;
-};
+// export const currentTaskId = (event: any) => {
+//   const target = event.target;
+//   const taskId = target.getAttribute("data-task-id");
+//   console.log(`currentTaskId console`);
+//   return taskId;
+// };
 
 export const countingDeadline = function (date: string): number {
   if (date) {
@@ -92,7 +95,7 @@ export const selectedCategory = function () {
   return taskCategories.options[thisOption].textContent;
 };
 
-export const dynamicImportanceClass = function (target: any, forbidden: any) {
+const dynamicImportanceClass = function (target: any, forbidden: any) {
   const importanceValue = +taskImportance.value;
   const importanceName = forbidden[importanceValue as keyof typeof forbidden];
   target.textContent = importanceName;
@@ -161,7 +164,7 @@ const fillingEditInputs = function (event: any) {
   }
 };
 
-export const modalSubmitValue = function (name: string) {
+const modalSubmitValue = function (name: string) {
   taskSubmit.value = name;
 };
 
@@ -309,14 +312,14 @@ export const daysRemaining = function (date: any) {
   return daysRemaining;
 };
 
-export const modalOpening = function (title: string) {
+const modalOpening = function (title: string) {
   if (modalTitle) {
     modalTitle.textContent = title;
   }
   modalBg?.classList.add("active");
 };
 
-export const placeholderDisplayChange = function () {
+const placeholderDisplayChange = function () {
   if (textareaPlaceholder) {
     textareaPlaceholder.style.display =
       taskDescription.value.length > 0 ? "none" : "block";
@@ -404,6 +407,17 @@ const closeModalByOutsideClick = function (event: any) {
   }
 };
 
+const applyFilter = function (filteredTasks: Task[], state: string): Task[] {
+  filteredTasks.length = 0;
+  filterModal.classList.add("active");
+  taskInstances.forEach((singleInstance) => {
+    if (singleInstance.state === `${state}`) {
+      filteredTasks.push(singleInstance);
+    }
+  });
+  return filteredTasks;
+};
+
 validateBtn.addEventListener("click", function () {
   validateModal.classList.remove("active");
 });
@@ -419,44 +433,15 @@ taskImportance.addEventListener("change", function () {
   dynamicImportanceClass(importanceRange, taskImportanceObj);
 });
 
-let filteredArray: any[] = [];
-filterActiveBtn.addEventListener("click", function (): any[] {
-  filteredArray = [];
-  filterModal.classList.add("active");
-
-  taskInstances.forEach((singleInstance) => {
-    if (singleInstance.state === `active`) {
-      filteredArray.push(singleInstance);
-    }
-  });
-  console.log(`Amount of all items: ${taskInstances.length}`);
-  console.log(
-    `Amount of filtered (active state) items: ${filteredArray.length}`
-  );
-
-  console.log(filteredArray);
-  return filteredArray;
+filterActiveBtn.addEventListener("click", function () {
+  applyFilter(filteredArray, `active`);
 });
 
 filterFinishedBtn.addEventListener("click", function () {
-  filterModal.classList.add("active");
-  const filteredArray: any[] = [];
-
-  taskInstances.forEach((singleInstance) => {
-    if (singleInstance.state === `finished`) {
-      filteredArray.push(singleInstance);
-    }
-  });
-
-  console.log(
-    `Amount of filtered (finished state) items: ${filteredArray.length}`
-  );
-
-  console.log(filteredArray);
+  applyFilter(filteredArray, `finished`);
 });
 
 filterClose?.addEventListener("click", function () {
-  console.log(`filter's close clicked`);
   filterModal.classList.remove("active");
 });
 
@@ -478,12 +463,9 @@ filterDefault.addEventListener("click", function () {
 });
 
 filterSubmit.addEventListener("click", function () {
-  console.log(`filterSubmit tasks`);
-  console.log(filteredArray);
-
   // filter tab
   if (filterTab1.checked) {
-    const checkboxesNamesArray: string[] = [];
+    let checkboxesNamesArray: string[] = [];
     filterTabCheckboxes.forEach((singleCheckbox) => {
       if ((singleCheckbox as HTMLInputElement).checked) {
         checkboxesNamesArray.push((singleCheckbox as HTMLInputElement).name);
@@ -508,14 +490,12 @@ filterSubmit.addEventListener("click", function () {
         let thisTaskID = singleTask.id;
         //prettier-ignore
         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
-        //prettier-ignore
         const thisTaskImportance = singleTask.importance;
         const thisTaskCategory = singleTask.category;
         //prettier-ignore
-        // const thisTaskDeadline = Math.abs(singleTask.deadline);
         const thisTaskDeadline = singleTask.deadline;
 
-        (thisTaskDiv as HTMLElement).classList.add("display-none");
+        thisTaskDiv.classList.add("display-none");
 
         //prettier-ignore
         const selectedImportance = importanceArray.map(item => item.replace('importance-', ''));
@@ -541,7 +521,7 @@ filterSubmit.addEventListener("click", function () {
         //prettier-ignore
         let thisTaskDiv = document.querySelector(`.single-task[data-task-id="${thisTaskID}"]`) as HTMLElement;
 
-        (thisTaskDiv as HTMLElement).classList.remove("display-none");
+        thisTaskDiv.classList.remove("display-none");
       });
     }
   }
@@ -558,19 +538,20 @@ filterSubmit.addEventListener("click", function () {
       }
     });
     const sortCategory = sortBy.replace(/-(1|2)$/, "");
+    console.log(`sortCategory:`, sortCategory);
     const sortType = sortBy.slice(-1);
 
     const filteredArrayCopy = [...filteredArray];
     let sortedArray: Task[];
     if (sortType == `1`) {
-      sortedArray = filteredArrayCopy.sort((first, last) =>
+      sortedArray = filteredArrayCopy.sort((first: Task, last: Task) => {
         //prettier-ignore
-        last[sortCategory] < first[sortCategory] ? 1 : last[sortCategory] > first[sortCategory] ? -1 : 0
-      );
+        return  (last as any)[sortCategory] < (first as any)[sortCategory] ? 1 : (last as any)[sortCategory] > (first as any)[sortCategory] ? -1 : 0
+      });
     } else {
       sortedArray = filteredArrayCopy.sort((first, last) =>
         //prettier-ignore
-        first[sortCategory] < last[sortCategory] ? 1 : first[sortCategory] > last[sortCategory] ? -1 : 0
+        (first as any)[sortCategory] < (last as any)[sortCategory] ? 1 : (first as any)[sortCategory] > (last as any)[sortCategory] ? -1 : 0
       );
     }
 
