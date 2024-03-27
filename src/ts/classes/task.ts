@@ -1,6 +1,11 @@
-import { currentDayCheck } from "../functions";
+import { currentDayCheck } from "../helpers/current-day-check";
+import { daysRemaining } from "../helpers/days-remaining";
+import { FormPayload } from "../model/create-task";
+import { assertValidTaskCategory } from "../model/validators/assert-valid-task-category";
+import { assertValidTaskDescription } from "../model/validators/assert-valid-task-description";
+import { assertValidTaskName } from "../model/validators/assert-valid-task-name";
 
-type DatabaseTask = {
+export type DatabaseTask = {
   id: string;
   category: string;
   currentDate: string;
@@ -11,6 +16,19 @@ type DatabaseTask = {
   name: string;
   state: string;
   timeStamp: number;
+};
+
+type TaskCreator = {
+  id?: string;
+  currentDate?: string;
+  state?: string;
+  timeStamp?: number;
+  name: string;
+  description: string;
+  deadline: number;
+  dateOfDeadline: string;
+  category: string;
+  importance: string;
 };
 
 export default class Task {
@@ -25,7 +43,7 @@ export default class Task {
   state: string;
   timeStamp: number;
 
-  constructor(taskCreator: DatabaseTask | any) {
+  constructor(taskCreator: TaskCreator) {
     this.name = taskCreator.name;
     this.description = taskCreator.description;
     this.deadline = taskCreator.deadline;
@@ -34,7 +52,7 @@ export default class Task {
     this.importance = taskCreator.importance;
 
     this.id = taskCreator.id ?? null;
-    this.currentDate = taskCreator.currentData ?? currentDayCheck();
+    this.currentDate = taskCreator.currentDate ?? currentDayCheck();
     this.state = taskCreator.state ?? `active`;
     this.timeStamp = taskCreator.timeStamp ?? Date.now();
   }
@@ -62,5 +80,14 @@ export default class Task {
       dateOfDeadline: this.dateOfDeadline,
       importance: this.importance,
     };
+  }
+
+  update({ category, deadline, description, importance, name }: FormPayload) {
+    this.name = assertValidTaskName(name);
+    this.description = assertValidTaskDescription(description);
+    this.category = assertValidTaskCategory(category);
+    this.deadline = daysRemaining(deadline);
+    this.importance = importance;
+    this.dateOfDeadline = deadline;
   }
 }

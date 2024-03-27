@@ -1,4 +1,4 @@
-import Task from "./scheme/Task";
+import Task, { DatabaseTask } from "./classes/task";
 
 import { initializeApp } from "firebase/app";
 
@@ -9,6 +9,7 @@ import {
   addDoc,
   doc,
   updateDoc,
+  CollectionReference,
 } from "firebase/firestore";
 
 const {
@@ -33,10 +34,15 @@ initializeApp(firebaseConfig);
 
 const db = getFirestore();
 
-export const colRef = collection(db, "tasks");
+type TaskDocument = Omit<DatabaseTask, "id">;
 
-export const sendTask = (task: Task): void => {
-  addDoc(colRef, task.toSave());
+export const colRef = collection(db, "tasks") as CollectionReference<
+  TaskDocument,
+  TaskDocument
+>;
+
+export const sendTask = (task: Task) => {
+  return addDoc(colRef, task.toSave());
 };
 
 export const removeTask = (taskId: string): void => {
@@ -48,8 +54,16 @@ export const updateTask = (task: Task) => {
   const dbId = task.id;
   if (!!dbId) {
     const docRef = doc(db, "tasks", dbId);
-    updateDoc(docRef, task.toUpdate());
+    return updateDoc(docRef, task.toUpdate());
   }
 };
 
-export default db;
+export const updateTaskState = (docRef: any, newState: any) => {
+  if (docRef) {
+    updateDoc(docRef, { state: newState });
+  }
+};
+
+export const getDocRef = (dbId: any) => {
+  return dbId ? doc(db, "tasks", dbId) : null;
+};

@@ -1,0 +1,13 @@
+import "./validation-button-handler";
+import "./task-importance-handler";
+import "./filter-active-button-handler";
+import "./filter-finished-button-handler";
+import "./filter-close-button-handler";
+import "./set-filter-to-default-handler";
+import "./modal-opening-handler";
+import "./modal-closing-handler";
+import "./close-modal-with-key-handler";
+import "./close-modal-with-outside-click-handler";
+import "./set-category-handler";
+import "./task-description-display-handler";
+import "./task-container-functions-handler";

@@ -1,4 +1,4 @@
-import Task from "./scheme/Task";
+import Task from "./task";
 
 export default class TaskPrinter {
   task: Task;

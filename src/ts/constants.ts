@@ -40,8 +40,10 @@ export const modalTitle = document.querySelector("#modal-title") as HTMLElement;
 export const taskCategories = document.querySelector("#task-cat") as HTMLSelectElement;
 // prettier-ignore
 export const taskContainerActive = document.querySelector("#container-active") as HTMLElement;
+
 // prettier-ignore
 export const taskContainerFinished = document.querySelector("#container-finished") as HTMLElement;
+
 // prettier-ignore
 export const taskDeadline = document.querySelector("#date") as HTMLInputElement;
 // prettier-ignore
