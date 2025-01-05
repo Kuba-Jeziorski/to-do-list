@@ -1,4 +1,6 @@
-Simple project of To Do List made with TS and SCSS.
+# Simple project of To Do List made with TS and SCSS. (undone)
+
+## edit: At some point I decided to write this project into React. It's not complete so some functionalities may not work properly 
 
 Features:
 
